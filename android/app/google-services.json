@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "70532459459",
+    "project_id": "usuariosfakestoreapi",
+    "storage_bucket": "usuariosfakestoreapi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:70532459459:android:6ee84cc4ae5a8894316b76",
+        "android_client_info": {
+          "package_name": "com.example.product_list_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAGkqMTLM8WgYH-NdNHM8Ijm0B45fPbCg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
