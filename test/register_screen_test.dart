@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:product_list_app/screens/register_screen.dart';
+import 'package:product_list_app/screens/register_patient_screen.dart';
 
 void main() {
   testWidgets('Formulario de registro funciona correctamente', (WidgetTester tester) async {
