@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'home_screen.dart';
-import 'register_screen.dart';
+import 'register_patient_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
