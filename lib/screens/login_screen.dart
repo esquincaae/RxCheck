@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'home_screen.dart';
 import 'register_patient_screen.dart';
@@ -174,11 +175,11 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(
-                  'assets/images/Logo_Login.png',
-                  height: 100,
-                  errorBuilder: (_, __, ___) =>
-                      Icon(Icons.image_not_supported, size: 100),
+                SvgPicture.asset(
+                  'assets/images/Logo_LogRec.svg',
+                  height: 200,
+                  placeholderBuilder: (context) =>
+                  const CircularProgressIndicator(),
                 ),
                 SizedBox(height: 20),
                 Text(

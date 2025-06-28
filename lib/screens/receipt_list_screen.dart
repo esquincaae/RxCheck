@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/product.dart';
-import 'product_detail_screen.dart';
+import 'receipt_detail_screen.dart';
 import '../cart/cart.dart';
 import '../widgets/product_card.dart';
 

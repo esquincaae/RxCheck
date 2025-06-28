@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
-import 'product_list_screen.dart';
-import 'cart_screen.dart';
+import 'receipt_list_screen.dart';
+import 'qr_detector_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final AuthService authService = AuthService();
