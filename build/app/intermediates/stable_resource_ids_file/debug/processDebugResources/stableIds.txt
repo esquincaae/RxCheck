@@ -1,4 +1,4 @@
-com.example.product_list_app:xml/image_share_filepaths = 0x7f110000
+com.example.product_list_app:xml/image_share_filepaths = 0x7f110001
 com.example.product_list_app:styleable/ViewStubCompat = 0x7f100045
 com.example.product_list_app:styleable/View = 0x7f100043
 com.example.product_list_app:styleable/TextAppearance = 0x7f100041
@@ -593,6 +593,7 @@ com.example.product_list_app:string/common_google_play_services_updating_text = 
 com.example.product_list_app:id/contentPanel = 0x7f08005a
 com.example.product_list_app:anim/btn_checkbox_to_checked_box_outer_merged_animation = 0x7f01000d
 com.example.product_list_app:id/collapseActionView = 0x7f080058
+com.example.product_list_app:xml/flutter_image_picker_file_paths = 0x7f110000
 com.example.product_list_app:layout/notification_template_part_chronometer = 0x7f0b0027
 com.example.product_list_app:id/clip_horizontal = 0x7f080056
 com.example.product_list_app:string/not_set = 0x7f0e0040

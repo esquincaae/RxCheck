@@ -6,6 +6,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 
+import 'screens/edit_profile_screen.dart';
+
 //Permite navegar desde fuera del árbol de widgets
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -43,7 +45,7 @@ class AuthWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      return LoginScreen();
+      return EditProfileScreen(); //LoginScreen();
     } else {
       return HomeScreen();
     }
