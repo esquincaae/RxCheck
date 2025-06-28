@@ -38,17 +38,17 @@ com.example.product_list_app-jetified-lifecycle-livedata-core-ktx-2.7.0-36 C:\Us
 com.example.product_list_app-jetified-annotation-experimental-1.4.0-37 C:\Users\edrey\.gradle\caches\8.10.2\transforms\f09a22cdd213028a38958888c7d16e20\transformed\jetified-annotation-experimental-1.4.0\res
 com.example.product_list_app-browser-1.4.0-38 C:\Users\edrey\.gradle\caches\8.10.2\transforms\f8742dbdd8ad548bbf5dde49a0ea9a7d\transformed\browser-1.4.0\res
 com.example.product_list_app-core-runtime-2.2.0-39 C:\Users\edrey\.gradle\caches\8.10.2\transforms\ff849810dfe34a0ab790c402787c149e\transformed\core-runtime-2.2.0\res
-com.example.product_list_app-debug-40 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\android\app\src\debug\res
-com.example.product_list_app-main-41 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\android\app\src\main\res
-com.example.product_list_app-google-services-42 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\build\app\generated\res\google-services\debug
-com.example.product_list_app-pngs-43 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\build\app\generated\res\pngs\debug
-com.example.product_list_app-resValues-44 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\build\app\generated\res\resValues\debug
-com.example.product_list_app-packageDebugResources-45 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\build\app\intermediates\incremental\debug\packageDebugResources\merged.dir
-com.example.product_list_app-packageDebugResources-46 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\build\app\intermediates\incremental\debug\packageDebugResources\stripped.dir
-com.example.product_list_app-debug-47 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\build\app\intermediates\merged_res\debug\mergeDebugResources
-com.example.product_list_app-debug-48 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\build\firebase_auth\intermediates\packaged_res\debug\packageDebugResources
-com.example.product_list_app-debug-49 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\build\firebase_core\intermediates\packaged_res\debug\packageDebugResources
-com.example.product_list_app-debug-50 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\build\flutter_secure_storage\intermediates\packaged_res\debug\packageDebugResources
-com.example.product_list_app-debug-51 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\build\google_sign_in_android\intermediates\packaged_res\debug\packageDebugResources
-com.example.product_list_app-debug-52 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\build\path_provider_android\intermediates\packaged_res\debug\packageDebugResources
-com.example.product_list_app-debug-53 C:\Users\edrey\OneDrive\Escritorio\UP\moviles 2\appmovil-fakestoreapi\build\shared_preferences_android\intermediates\packaged_res\debug\packageDebugResources
+com.example.product_list_app-debug-40 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\android\app\src\debug\res
+com.example.product_list_app-main-41 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\android\app\src\main\res
+com.example.product_list_app-google-services-42 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\build\app\generated\res\google-services\debug
+com.example.product_list_app-pngs-43 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\build\app\generated\res\pngs\debug
+com.example.product_list_app-resValues-44 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\build\app\generated\res\resValues\debug
+com.example.product_list_app-packageDebugResources-45 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\build\app\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.example.product_list_app-packageDebugResources-46 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\build\app\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.example.product_list_app-debug-47 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\build\app\intermediates\merged_res\debug\mergeDebugResources
+com.example.product_list_app-debug-48 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\build\firebase_auth\intermediates\packaged_res\debug\packageDebugResources
+com.example.product_list_app-debug-49 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\build\firebase_core\intermediates\packaged_res\debug\packageDebugResources
+com.example.product_list_app-debug-50 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\build\flutter_secure_storage\intermediates\packaged_res\debug\packageDebugResources
+com.example.product_list_app-debug-51 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\build\google_sign_in_android\intermediates\packaged_res\debug\packageDebugResources
+com.example.product_list_app-debug-52 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\build\path_provider_android\intermediates\packaged_res\debug\packageDebugResources
+com.example.product_list_app-debug-53 C:\Users\edrey\OneDrive\Escritorio\APPrecetas\build\shared_preferences_android\intermediates\packaged_res\debug\packageDebugResources

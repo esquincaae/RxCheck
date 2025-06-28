@@ -1,66 +1,130 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:product_list_app/screens/login_screen.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterPatientScreenPage extends StatefulWidget {
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  State<RegisterPatientScreenPage> createState() => _RegistroPacientePageState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  final emailController = TextEditingController();
-  final passController = TextEditingController();
-  final confirmPassController = TextEditingController();
-  String error = '';
+class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
+  final _formKey = GlobalKey<FormState>();
+  final PageController _pageController = PageController();
+
+  final TextEditingController nombresController = TextEditingController();
+  final TextEditingController primerApellidoController = TextEditingController();
+  final TextEditingController segundoApellidoController = TextEditingController();
+  final TextEditingController curpController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passController = TextEditingController();
+  final TextEditingController confirmPassController = TextEditingController();
+
   bool isLoading = false;
+  String error = "";
+
+  @override
+  void dispose() {
+    nombresController.dispose();
+    primerApellidoController.dispose();
+    segundoApellidoController.dispose();
+    curpController.dispose();
+    emailController.dispose();
+    passController.dispose();
+    confirmPassController.dispose();
+    _pageController.dispose();
+    super.dispose();
+  }
 
   Future<void> registerUser() async {
-    final email = emailController.text.trim();
-    final password = passController.text.trim();
-    final confirmPassword = confirmPassController.text.trim();
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+        error = '';
+      });
 
-    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      setState(() => error = 'Por favor completa todos los campos');
-      return;
-    }
-
-    if (password != confirmPassword) {
-      setState(() => error = 'Las contraseñas no coinciden');
-      return;
-    }
-
-    setState(() {
-      isLoading = true;
-      error = '';
-    });
-
-    try {
-      final userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-
-      final user = userCredential.user;
-      if (user != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => LoginScreen()),
+      try {
+        final userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passController.text.trim(),
         );
+
+        final user = userCredential.user;
+        if (user != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => LoginScreen()),
+          );
+        }
+      } on FirebaseAuthException catch (e) {
+        setState(() {
+          error = e.message ?? 'Error al registrar';
+        });
+      } catch (e) {
+        setState(() {
+          error = 'Error inesperado: $e';
+        });
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
       }
-    } on FirebaseAuthException catch (e) {
-      setState(() => error = e.message ?? 'Error al registrar');
-    } finally {
-      setState(() => isLoading = false);
     }
+  }
+
+  Widget buildInput({
+    required String label,
+    required TextEditingController controller,
+    bool obscureText = false,
+    bool enabled = true,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        obscureText: obscureText,
+        enabled: enabled,
+        keyboardType: keyboardType,
+        validator: validator,
+        decoration: InputDecoration(
+          labelText: label,
+          floatingLabelStyle: TextStyle(color: Colors.blue),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            borderSide: BorderSide(color: Color(0xFFE0E3E7)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            borderSide: BorderSide(color: Colors.blue, width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            borderSide: BorderSide(color: Colors.red, width: 2),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            borderSide: BorderSide(color: Colors.red, width: 2),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF1F4F8),
+      backgroundColor: const Color(0xFFF1F4F8),
       appBar: AppBar(
-        backgroundColor: Color(0xFFF1F4F8),
-        title: Text("Registro Paciente"),
+        backgroundColor: const Color(0xFFF1F4F8),
+        title: const Text("Registro Paciente"),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -71,294 +135,204 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Center(
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(
-                  'assets/images/image_Login.png',
-                  height: 100,
-                  errorBuilder: (context, error, stackTrace) =>
-                      Icon(Icons.image_not_supported, size: 100),
+                SvgPicture.asset(
+                  'assets/images/Logo_Register_Patient.svg',
+                  height: 200,
+                  placeholderBuilder: (context) =>
+                  const CircularProgressIndicator(),
                 ),
-                SizedBox(height: 20),
-                Text(
+                const SizedBox(height: 20),
+                const Text(
                   'Crear Cuenta',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Form(
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        controller: passController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: 'Nombre(s)',
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Color(0xFFE0E3E7)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red, width: 2),
-                          ),
+                  key: _formKey,
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.75,
+                    child: PageView(
+                      controller: _pageController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        // Página 1: Datos personales
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 40),
+                            buildInput(
+                              controller: nombresController,
+                              label: "Nombre(s)",
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingresa tu Nombre';
+                                }
+                                if (value.length < 3) {
+                                  return 'Debe tener al menos 3 caracteres';
+                                }
+                                return null;
+                              },
+                            ),
+                            buildInput(
+                              controller: primerApellidoController,
+                              label: "Primer Apellido",
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingresa tu Primer Apellido';
+                                }
+                                if (value.length < 3) {
+                                  return 'Debe tener al menos 3 caracteres';
+                                }
+                                return null;
+                              },
+                            ),
+                            buildInput(
+                              controller: segundoApellidoController,
+                              label: "Segundo Apellido",
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingresa tu Segundo Apellido';
+                                }
+                                if (value.length < 3) {
+                                  return 'Debe tener al menos 3 caracteres';
+                                }
+                                return null;
+                              },
+                            ),
+                            buildInput(
+                              controller: curpController,
+                              label: "CURP",
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingresa tu CURP';
+                                }
+                                if (value.length != 18) {
+                                  return 'Tu CURP debe tener 18 caracteres';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 30),
+                            ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  _pageController.nextPage(
+                                    duration: const Duration(milliseconds: 500),
+                                    curve: Curves.ease,
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 50, vertical: 16),
+                              ),
+                              child: const Text("Siguiente"),
+                            ),
+                          ],
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa tu Nombre';
-                          }
-                          if (value.length < 8) {
-                            return 'Tu(s) Nombre(s) debe(n) coincidir con el de tu CURP';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      TextFormField(
-                        controller: passController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: 'Primer Apellido',
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Color(0xFFE0E3E7)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red, width: 2),
-                          ),
+                        // Página 2: Datos de cuenta
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 40),
+                            buildInput(
+                              controller: emailController,
+                              label: "Correo electrónico",
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingresa tu correo';
+                                }
+                                if (!value.contains('@')) {
+                                  return 'Ingresa un correo válido';
+                                }
+                                return null;
+                              },
+                            ),
+                            buildInput(
+                              controller: passController,
+                              label: "Contraseña",
+                              obscureText: true,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingresa tu contraseña';
+                                }
+                                if (value.length < 8) {
+                                  return 'Debe tener al menos 8 caracteres';
+                                }
+                                return null;
+                              },
+                            ),
+                            buildInput(
+                              controller: confirmPassController,
+                              label: "Confirmar Contraseña",
+                              obscureText: true,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor confirma tu contraseña';
+                                }
+                                if (value != passController.text) {
+                                  return 'Las contraseñas no coinciden';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 30),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _pageController.previousPage(
+                                      duration: const Duration(milliseconds: 500),
+                                      curve: Curves.ease,
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.grey,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30, vertical: 16),
+                                  ),
+                                  child: const Text("Regresar"),
+                                ),
+                                isLoading
+                                    ? const CircularProgressIndicator()
+                                    : ElevatedButton(
+                                  onPressed: registerUser,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                      BorderRadius.circular(20),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30, vertical: 16),
+                                  ),
+                                  child: const Text("Registrarse"),
+                                ),
+                              ],
+                            ),
+                            if (error.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Text(error,
+                                    style: const TextStyle(color: Colors.red)),
+                              ),
+                          ],
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa tu Primer Apellido';
-                          }
-                          if (value.length < 8) {
-                            return 'Tu Primer Apellido debe coincidir con el de tu CURP';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      TextFormField(
-                        controller: passController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: 'Segundo Apellido',
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Color(0xFFE0E3E7)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red, width: 2),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa tu Segundo Apellido';
-                          }
-                          if (value.length < 8) {
-                            return 'Tu Segundo Apellido debe coincidir con el de tu CURP';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      TextFormField(
-                        controller: passController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: 'CURP',
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Color(0xFFE0E3E7)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red, width: 2),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa tu CURP';
-                          }
-                          if (value.length != 18) {
-                            return 'Tu CURP debe contener 18 digitos';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      TextFormField(
-                        controller: emailController,
-                        decoration: InputDecoration(
-                          labelText: 'Correo electrónico',
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Color(0xFFE0E3E7)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red, width: 2),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa tu correo';
-                          }
-                          if (!value.contains('@')) {
-                            return 'Ingresa un correo válido';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      TextFormField(
-                        controller: passController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: 'Contraseña',
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Color(0xFFE0E3E7)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red, width: 2),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa tu contraseña';
-                          }
-                          if (value.length < 8) {
-                            return 'La contraseña debe tener al menos 8 caracteres';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      TextFormField(
-                        controller: confirmPassController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: 'Confirmar contraseña',
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Color(0xFFE0E3E7)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red, width: 2),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor confirma tu contraseña';
-                          }
-                          if (value != passController.text) {
-                            return 'Las contraseñas no coinciden';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 30),
-                      isLoading
-                          ? CircularProgressIndicator()
-                          : ElevatedButton(
-                        onPressed: registerUser,
-                        child: Text('Registrarse'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 16),
-                        ),
-                      ),
-                      if (error.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: Text(error, style: TextStyle(color: Colors.red)),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -368,5 +342,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-
 }

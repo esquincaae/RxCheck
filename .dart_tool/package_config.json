@@ -8,6 +8,12 @@
       "languageVersion": "3.2"
     },
     {
+      "name": "args",
+      "rootUri": "file:///C:/Users/edrey/AppData/Local/Pub/Cache/hosted/pub.dev/args-2.7.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
       "name": "async",
       "rootUri": "file:///C:/Users/edrey/AppData/Local/Pub/Cache/hosted/pub.dev/async-2.12.0",
       "packageUri": "lib/",
@@ -146,6 +152,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "flutter_svg",
+      "rootUri": "file:///C:/Users/edrey/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_svg-2.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
       "name": "flutter_test",
       "rootUri": "file:///C:/src/flutter/packages/flutter_test",
       "packageUri": "lib/",
@@ -260,6 +272,12 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "path_parsing",
+      "rootUri": "file:///C:/Users/edrey/AppData/Local/Pub/Cache/hosted/pub.dev/path_parsing-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
       "name": "path_provider",
       "rootUri": "file:///C:/Users/edrey/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider-2.1.5",
       "packageUri": "lib/",
@@ -294,6 +312,12 @@
       "rootUri": "file:///C:/Users/edrey/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_windows-2.3.0",
       "packageUri": "lib/",
       "languageVersion": "3.2"
+    },
+    {
+      "name": "petitparser",
+      "rootUri": "file:///C:/Users/edrey/AppData/Local/Pub/Cache/hosted/pub.dev/petitparser-6.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.5"
     },
     {
       "name": "platform",
@@ -398,6 +422,24 @@
       "languageVersion": "3.5"
     },
     {
+      "name": "vector_graphics",
+      "rootUri": "file:///C:/Users/edrey/AppData/Local/Pub/Cache/hosted/pub.dev/vector_graphics-1.1.19",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "vector_graphics_codec",
+      "rootUri": "file:///C:/Users/edrey/AppData/Local/Pub/Cache/hosted/pub.dev/vector_graphics_codec-1.1.13",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
+      "name": "vector_graphics_compiler",
+      "rootUri": "file:///C:/Users/edrey/AppData/Local/Pub/Cache/hosted/pub.dev/vector_graphics_compiler-1.1.17",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
       "name": "vector_math",
       "rootUri": "file:///C:/Users/edrey/AppData/Local/Pub/Cache/hosted/pub.dev/vector_math-2.1.4",
       "packageUri": "lib/",
@@ -428,13 +470,19 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "xml",
+      "rootUri": "file:///C:/Users/edrey/AppData/Local/Pub/Cache/hosted/pub.dev/xml-6.5.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
       "name": "product_list_app",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     }
   ],
-  "generated": "2025-06-27T19:32:28.001889Z",
+  "generated": "2025-06-28T05:41:04.940704Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///C:/src/flutter",

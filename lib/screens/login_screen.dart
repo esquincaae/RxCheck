@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
 import 'home_screen.dart';
 import 'register_patient_screen.dart';
+import 'register_doctor_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -15,6 +17,32 @@ class _LoginScreenState extends State<LoginScreen> {
   final passController = TextEditingController();
   String error = '';
   bool isLoading = false;
+
+  InputDecoration buildInputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      floatingLabelStyle: TextStyle(color: Colors.blue),
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide(color: Color(0xFFE0E3E7)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide(color: Colors.blue, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide(color: Colors.red),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide(color: Colors.red, width: 2),
+      ),
+    );
+  }
 
   Future<void> loginWithCredentials() async {
     if (!_formKey.currentState!.validate()) return;
@@ -30,8 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
         password: passController.text.trim(),
       );
 
-      final user = credential.user;
-      if (user != null) {
+      if (credential.user != null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => HomeScreen()),
@@ -63,11 +90,9 @@ class _LoginScreenState extends State<LoginScreen> {
         idToken: googleAuth.idToken,
       );
 
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(
-          credential);
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
 
-      final user = userCredential.user;
-      if (user != null) {
+      if (userCredential.user != null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => HomeScreen()),
@@ -80,21 +105,79 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> showRegisterDialog() async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        title: Center(
+          child: Text('¿Cómo deseas registrarte?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+        ),
+        content: Text('Selecciona el tipo de registro que deseas realizar:', textAlign: TextAlign.center),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => RegisterPatientScreenPage()));
+                },
+                child: Text('Paciente'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => RegisterDoctorScreenPage()));
+                },
+                child: Text('Médico'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancelar'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFF1F4F8),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20),
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/image_Login.png',
+                  'assets/images/Logo_Login.png',
                   height: 100,
-                  errorBuilder: (context, error, stackTrace) =>
+                  errorBuilder: (_, __, ___) =>
                       Icon(Icons.image_not_supported, size: 100),
                 ),
                 SizedBox(height: 20),
@@ -109,28 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       TextFormField(
                         controller: userController,
-                        decoration: InputDecoration(
-                          labelText: 'Correo electrónico',
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Color(0xFFE0E3E7)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red, width: 2),
-                          ),
-                        ),
+                        decoration: buildInputDecoration('Correo electrónico'),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Por favor ingresa tu correo';
@@ -145,28 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: passController,
                         obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: 'Contraseña',
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Color(0xFFE0E3E7)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.blue, width: 2),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                          focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(color: Colors.red, width: 2),
-                          ),
-                        ),
+                        decoration: buildInputDecoration('Contraseña'),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Por favor ingresa tu contraseña';
@@ -180,15 +221,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: 30),
                       ElevatedButton(
                         onPressed: loginWithCredentials,
-                        child: Text('Iniciar Sesión'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 16),
+                          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
                         ),
+                        child: Text('Iniciar Sesión'),
                       ),
                       SizedBox(height: 20),
                       Row(
@@ -196,23 +237,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text('¿No tienes cuenta? '),
                           TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (_) => RegisterScreen()),
-                                );
-                              },
-                              child: Text(
-                                  'Regístrate aquí',
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.bold
-                                  )
+                            onPressed: showRegisterDialog,
+                            child: Text(
+                              'Regístrate aquí',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
                               ),
-                          )
+                            ),
+                          ),
                         ],
-                      )
-                      ,
+                      ),
                       if (error.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 20),
