@@ -3,19 +3,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:product_list_app/screens/login_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class RegisterPatientScreenPage extends StatefulWidget {
+
+class RegisterDoctorScreenPage extends StatefulWidget {
   @override
-  State<RegisterPatientScreenPage> createState() => _RegistroPacientePageState();
+  State<RegisterDoctorScreenPage> createState() => _RegisterDoctorPageState();
 }
 
-class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
+class _RegisterDoctorPageState extends State<RegisterDoctorScreenPage> {
   final _formKey = GlobalKey<FormState>();
   final PageController _pageController = PageController();
 
   final TextEditingController nombresController = TextEditingController();
   final TextEditingController primerApellidoController = TextEditingController();
   final TextEditingController segundoApellidoController = TextEditingController();
-  final TextEditingController curpController = TextEditingController();
+  final TextEditingController cedulaController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
   final TextEditingController confirmPassController = TextEditingController();
@@ -28,7 +29,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
     nombresController.dispose();
     primerApellidoController.dispose();
     segundoApellidoController.dispose();
-    curpController.dispose();
+    cedulaController.dispose();
     emailController.dispose();
     passController.dispose();
     confirmPassController.dispose();
@@ -122,7 +123,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
       backgroundColor: const Color(0xFFF1F4F8),
       appBar: AppBar(
         backgroundColor: const Color(0xFFF1F4F8),
-        title: const Text("Registro Paciente"),
+        title: const Text("Registro Medico"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -137,7 +138,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
             child: Column(
               children: [
                 SvgPicture.asset(
-                  'assets/images/Logo_Register_Patient.svg',
+                  'assets/images/Logo_Register_Doctor.svg',
                   height: 200,
                   placeholderBuilder: (context) =>
                   const CircularProgressIndicator(),
@@ -169,7 +170,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                   return 'Por favor ingresa tu Nombre';
                                 }
                                 if (value.length < 3) {
-                                  return 'Debe tener al menos 3 caracteres';
+                                  return 'Debe constar de al menos 3 caracteres';
                                 }
                                 return null;
                               },
@@ -182,7 +183,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                   return 'Por favor ingresa tu Primer Apellido';
                                 }
                                 if (value.length < 3) {
-                                  return 'Debe tener al menos 3 caracteres';
+                                  return 'Debe constar de al menos 3 caracteres';
                                 }
                                 return null;
                               },
@@ -195,20 +196,20 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                   return 'Por favor ingresa tu Segundo Apellido';
                                 }
                                 if (value.length < 3) {
-                                  return 'Debe tener al menos 3 caracteres';
+                                  return 'Debe constar de al menos 3 caracteres';
                                 }
                                 return null;
                               },
                             ),
                             buildInput(
-                              controller: curpController,
-                              label: "CURP",
+                              controller: cedulaController,
+                              label: "CEDULA",
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu CURP';
+                                  return 'Por favor ingresa tu CEDULA';
                                 }
                                 if (value.length != 18) {
-                                  return 'Tu CURP debe tener 18 caracteres';
+                                  return 'Tu CEDULA debe constar de 7 caracteres';
                                 }
                                 return null;
                               },
