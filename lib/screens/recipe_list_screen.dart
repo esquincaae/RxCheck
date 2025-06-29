@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/product.dart';
-import 'receipt_detail_screen.dart';
-import '../cart/cart.dart';
+import 'recipe_detail_screen.dart';
 import '../widgets/product_card.dart';
 
-class ProductListScreen extends StatefulWidget {
+class RecipeListScreen extends StatefulWidget {
   @override
-  _ProductListScreenState createState() => _ProductListScreenState();
+  _RecipeListScreenState createState() => _RecipeListScreenState();
 }
 
-class _ProductListScreenState extends State<ProductListScreen> {
+class _RecipeListScreenState extends State<RecipeListScreen> {
   List<Product> products = [];
   bool isLoading = true;
   String? errorMessage;
@@ -49,23 +48,23 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Center(child: CircularProgressIndicator());
-    }
-
-    if (errorMessage != null) {
-      return Center(child: Text(errorMessage!));
-    }
-
-    if (products.isEmpty) {
-      return Center(child: Text('No hay productos disponibles'));
-    }
-
-    return	ListView.builder(
-      itemCount:	products.length,
-      itemBuilder: (context, index) {
-        return ProductCard(product: products[index]);
-      },
+    return Scaffold(
+      backgroundColor: const Color(0xFFF1F4F8),
+      body: SafeArea(
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : errorMessage != null
+            ? Center(child: Text(errorMessage!))
+            : products.isEmpty
+            ? const Center(child: Text('No hay recetas disponibles'))
+            : ListView.builder(
+          itemCount: products.length,
+          itemBuilder: (context, index) {
+            return ProductCard(product: products[index]);
+          },
+        ),
+      ),
     );
   }
+
 }

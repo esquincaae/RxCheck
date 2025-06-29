@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'home_screen.dart';
@@ -67,40 +66,6 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } on FirebaseAuthException catch (e) {
       setState(() => error = e.message ?? 'Error de autenticación');
-    } finally {
-      setState(() => isLoading = false);
-    }
-  }
-
-  Future<void> loginWithGoogle() async {
-    setState(() {
-      isLoading = true;
-      error = '';
-    });
-
-    try {
-      final googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        setState(() => isLoading = false);
-        return;
-      }
-
-      final googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-
-      if (userCredential.user != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => HomeScreen()),
-        );
-      }
-    } on FirebaseAuthException catch (e) {
-      setState(() => error = e.message ?? 'Error con Google');
     } finally {
       setState(() => isLoading = false);
     }

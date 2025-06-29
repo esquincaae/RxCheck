@@ -1,88 +1,156 @@
 import 'package:flutter/material.dart';
-import '../models/product.dart';
-import '../cart/cart.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
-class CartScreen extends StatefulWidget {
+class QRDetectorScreen extends StatefulWidget {
   @override
-  _CartScreensState createState() => _CartScreensState();
+  _QRDetectorScreenState createState() => _QRDetectorScreenState();
 }
 
-class _CartScreensState extends State<CartScreen> {
+class _QRDetectorScreenState extends State<QRDetectorScreen> {
+  final MobileScannerController cameraController = MobileScannerController();
+  String? qrCode;
+  bool _isScanning = false; // Controla si la cámara está encendida
+
+  void _showQRCodeDialog(String code) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Código QR Detectado'),
+        content: Text(code),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              cameraController.start(); // Reanuda para otro escaneo
+            },
+            child: Text('Cerrar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    cameraController.dispose();
+    super.dispose();
+  }
+
+  void _toggleScanning() {
+    if (_isScanning) {
+      cameraController.stop();
+    } else {
+      cameraController.start();
+    }
+    setState(() {
+      _isScanning = !_isScanning;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final items = Cart.items;
-
     return Scaffold(
-      appBar: AppBar(title: Text('Carrito de Compras')),
-      body: items.isEmpty
-          ? Center(child: Text('El carrito está vacío'))
-          : ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final product = items.keys.elementAt(index);
-          final quantity = items[product]!;
-
-          return ListTile(
-            leading: Image.network(product.image, width: 50, height: 50, fit: BoxFit.cover),
-            title: Text(product.title),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('\$${product.price.toStringAsFixed(2)}'),
-                Text('Cantidad: $quantity'),
-              ],
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.remove),
-                  onPressed: () {
-                    setState(() {
-                      Cart.remove(product);
-                    });
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: () {
-                    setState(() {
-                      Cart.add(product);
-                    });
-                  },
-                ),
-              ],
-            ),
-          );
-        },
+      appBar: AppBar(
+        backgroundColor: Color(0xFFF1F4F8),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          'Escáner QR',
+          style: TextStyle(color: Colors.black),
+        ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Total: \$${Cart.total.toStringAsFixed(2)}',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      backgroundColor: Color(0xFFF1F4F8),
+      body: Column(
+        children: [
+          SizedBox(height: 20),
+          Text(
+            'Comprobar QR de la Receta',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  Cart.items.clear();
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('¡Compra realizada con éxito!')),
-                );
-              },
-              child: Text('Comprar'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                foregroundColor: Colors.white,
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: Stack(
+              children: [
+                Center(
+                  child: Container(
+                    width: 350,
+                    height: 350,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: _isScanning
+                          ? MobileScanner(
+                        controller: cameraController,
+                        onDetect: (capture) {
+                          final barcodes = capture.barcodes;
+                          if (barcodes.isNotEmpty) {
+                            final code = barcodes.first.rawValue ?? '---';
+                            if (qrCode != code) {
+                              setState(() {
+                                qrCode = code;
+                              });
+                              cameraController.stop();
+                              setState(() {
+                                _isScanning = false;
+                              });
+                              _showQRCodeDialog(code);
+                            }
+                          }
+                        },
+                      )
+                          : Container(
+                        color: Color(0xFFB5B5B5),
+                        child: Center(
+                          child: Icon(
+                            Icons.qr_code,
+                            color: Color(0xFF3C3C3C),
+                            size: 100,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Container(
+                    width: 350,
+                    height: 350,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.blue, width: 3),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 20),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _isScanning ? Colors.red : Colors.blue,
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
-          ],
-        ),
+            icon: Icon(_isScanning ? Icons.stop : Icons.camera_alt, color: Colors.white,),
+            label: Text(_isScanning ? 'Detener Validacion' : 'Validar',
+              style: TextStyle(fontSize: 16,
+              color: _isScanning ? Colors.white : Colors.white,
+              fontWeight: FontWeight.bold),
+
+            ),
+            onPressed: _toggleScanning,
+          ),
+          SizedBox(height: 40),
+        ],
       ),
     );
   }
 }
+
