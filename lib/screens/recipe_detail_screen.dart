@@ -10,29 +10,86 @@ class ProductDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(product.title)),
+      backgroundColor: const Color(0xFFF1F4F8),
+      appBar: AppBar(
+        title: Text(
+          product.title,
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: const Color(0xFFF1F4F8),
+        foregroundColor: Colors.black,
+        elevation: 0,
+      ),
       body: FutureBuilder<Product>(
         future: fetchProductDetail(product.id),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator(color: Colors.black));
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(
+              child: Text(
+                'Error: ${snapshot.error}',
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
           } else {
             final product = snapshot.data!;
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image.network(product.image, height: 200),
-                  SizedBox(height: 16),
-                  Text(product.title, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 8),
-                  Text('\$${product.price.toStringAsFixed(2)}', style: TextStyle(fontSize: 18, color: Colors.green)),
-                  SizedBox(height: 16),
-                  Text(product.description),
-                ],
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Card(
+                color: Colors.white,
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            product.image,
+                            height: 220,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        product.title,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        '\$${product.price.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        product.description,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black87,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             );
           }
