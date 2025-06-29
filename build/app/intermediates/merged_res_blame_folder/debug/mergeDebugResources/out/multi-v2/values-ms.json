@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.product_list_app-mergeDebugResources-45:/values-ms/values-ms.xml",
+            "outputFile": "com.example.product_list_app-mergeDebugResources-48:/values-ms/values-ms.xml",
             "map": [
                 {
                     "source": "C:\\Users\\edrey\\.gradle\\caches\\8.10.2\\transforms\\f8742dbdd8ad548bbf5dde49a0ea9a7d\\transformed\\browser-1.4.0\\res\\values-ms\\values-ms.xml",
@@ -38,7 +38,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\edrey\\.gradle\\caches\\8.10.2\\transforms\\d4003e89e11d20e7aac223715520d9d9\\transformed\\jetified-play-services-base-18.0.1\\res\\values-ms\\values.xml",
+                    "source": "C:\\Users\\edrey\\.gradle\\caches\\8.10.2\\transforms\\80d381bf084c21e18706da6716588126\\transformed\\jetified-play-services-base-18.1.0\\res\\values-ms\\values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
                         "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",

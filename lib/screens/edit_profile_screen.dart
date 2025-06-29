@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
@@ -98,7 +97,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         backgroundColor: const Color(0xFFF1F4F8),
         title: const Text("Editar Perfil", style: TextStyle(color: Colors.black)),
         centerTitle: true,
-        elevation: 0,
         iconTheme: const IconThemeData(color: Colors.blue),
       ),
       body: Padding(
