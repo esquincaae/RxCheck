@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:product_list_app/widgets/custom_input_field.dart';
 
 import 'home_screen.dart';
 import 'register_patient_screen.dart';
-import 'register_doctor_screen.dart';
+import 'register_medical_center_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -13,36 +14,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final userController = TextEditingController();
+  final emailController = TextEditingController();
   final passController = TextEditingController();
   String error = '';
   bool isLoading = false;
-
-  InputDecoration buildInputDecoration(String label) {
-    return InputDecoration(
-      labelText: label,
-      floatingLabelStyle: TextStyle(color: Colors.blue),
-      filled: true,
-      fillColor: Colors.white,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: Color(0xFFE0E3E7)),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: Colors.blue, width: 2),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: Colors.red),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: Colors.red, width: 2),
-      ),
-    );
-  }
 
   Future<void> loginWithCredentials() async {
     if (!_formKey.currentState!.validate()) return;
@@ -54,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: userController.text.trim(),
+        email: emailController.text.trim(),
         password: passController.text.trim(),
       );
 
@@ -74,67 +49,86 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> showRegisterDialog() async {
     await showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: Colors.white,
-        title: Center(
-          child: Text('¿Cómo deseas registrarte?', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+        titlePadding: EdgeInsets.only(top: 16, left: 16, right: 16),
+        title: Column(
+          children: [
+            SvgPicture.asset(
+              'assets/images/Register.svg',
+              height: 50, // recolorear
+            ),
+            SizedBox(height: 12),
+            Text(
+              '¿Cómo deseas registrarte?',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
-        content: Text('Selecciona el tipo de registro que deseas realizar:', textAlign: TextAlign.center),
-        actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => RegisterPatientScreenPage()));
-                },
-                child: Text('Paciente'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Selecciona el tipo de registro que deseas realizar:',
+              textAlign: TextAlign.left,
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => RegisterMedicalCenterScreen()),
+                    );
+                  },
+                  child: Text('Farmacéutica'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => RegisterDoctorScreenPage()));
-                },
-                child: Text('Médico'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => RegisterPatientScreenPage()),
+                    );
+                  },
+                  child: Text('Paciente'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
                 ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Cancelar'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                ),
-              ),
-            ],
-          )
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFF1F4F8),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.only(top: 140),
         child: Center(
           child: SingleChildScrollView(
             child: Column(
@@ -142,86 +136,106 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 SvgPicture.asset(
                   'assets/images/Logo_LogRec.svg',
-                  height: 200,
+                  height: 150,
                   placeholderBuilder: (context) =>
                   const CircularProgressIndicator(),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
                 Text(
-                  'Iniciar Sesión',
+                  'RxCheck',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 40),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        controller: userController,
-                        decoration: buildInputDecoration('Correo electrónico'),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa tu correo';
-                          }
-                          if (!value.contains('@')) {
-                            return 'Ingresa un correo válido';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      TextFormField(
-                        controller: passController,
-                        obscureText: true,
-                        decoration: buildInputDecoration('Contraseña'),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa tu contraseña';
-                          }
-                          if (value.length < 8) {
-                            return 'La contraseña debe tener al menos 8 caracteres';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 30),
-                      ElevatedButton(
-                        onPressed: loginWithCredentials,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-                        ),
-                        child: Text('Iniciar Sesión'),
-                      ),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('¿No tienes cuenta? '),
-                          TextButton(
-                            onPressed: showRegisterDialog,
-                            child: Text(
-                              'Regístrate aquí',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold,
-                              ),
+                SizedBox(height: 10),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height - 200,
+                  //width: double.infinity,
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
+                          bottom: Radius.circular(20)
+                        )
+                    ),
+                    margin: EdgeInsets.only(top: 20),
+                    color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 30, top: 60, right: 30, bottom: 0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            CustomInputField(
+                              controller: emailController,
+                              label: "Correo electrónico",
+                              icon: Icons.email_outlined,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingresa tu correo';
+                                }
+                                if (!value.contains('@')) {
+                                  return 'Ingresa un correo válido';
+                                }
+                                return null;
+                              },
                             ),
-                          ),
-                        ],
-                      ),
-                      if (error.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: Text(error, style: TextStyle(color: Colors.red)),
+                            CustomInputField(
+                              controller: passController,
+                              label: "Contraseña",
+                              icon: Icons.lock_outline_rounded,
+                              obscureText: true,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingresa tu contraseña';
+                                }
+                                if (value.length < 8) {
+                                  return 'Debe tener al menos 8 caracteres';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 30),
+                            ElevatedButton(
+                              onPressed: loginWithCredentials,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+                              ),
+                              child: Text('Iniciar Sesión'),
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('¿No tienes cuenta? '),
+                                TextButton(
+                                  onPressed: showRegisterDialog,
+                                  child: Text(
+                                    'Regístrate aquí',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (error.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Text(error, style: TextStyle(color: Colors.red)),
+                              ),
+                          ],
                         ),
-                    ],
+                      ),
+                    ),
                   ),
-                ),
+                )
               ],
             ),
           ),

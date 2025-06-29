@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:product_list_app/screens/login_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:product_list_app/widgets/custom_input_field.dart';
 
 class RegisterPatientScreenPage extends StatefulWidget {
   @override
@@ -73,238 +74,198 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
     }
   }
 
-  Widget buildInput({
-    required String label,
-    required TextEditingController controller,
-    bool obscureText = false,
-    bool enabled = true,
-    TextInputType? keyboardType,
-    String? Function(String?)? validator,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscureText,
-        enabled: enabled,
-        keyboardType: keyboardType,
-        validator: validator,
-        decoration: InputDecoration(
-          labelText: label,
-          floatingLabelStyle: TextStyle(color: Colors.blue),
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20.0),
-            borderSide: BorderSide(color: Color(0xFFE0E3E7)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20.0),
-            borderSide: BorderSide(color: Colors.blue, width: 2),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20.0),
-            borderSide: BorderSide(color: Colors.red, width: 2),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20.0),
-            borderSide: BorderSide(color: Colors.red, width: 2),
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF1F4F8),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF1F4F8),
-        title: const Text("Registro Paciente"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.only(top: 140),
         child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SvgPicture.asset(
-                  'assets/images/Logo_Register_Patient.svg',
-                  height: 200,
-                  placeholderBuilder: (context) =>
-                  const CircularProgressIndicator(),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Crear Cuenta',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-                Form(
-                  key: _formKey,
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.75,
-                    child: PageView(
-                      controller: _pageController,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: [
-                        // Página 1: Datos personales
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 40),
-                            buildInput(
-                              controller: nombresController,
-                              label: "Nombre(s)",
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu Nombre';
-                                }
-                                if (value.length < 3) {
-                                  return 'Debe tener al menos 3 caracteres';
-                                }
-                                return null;
-                              },
-                            ),
-                            buildInput(
-                              controller: primerApellidoController,
-                              label: "Primer Apellido",
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu Primer Apellido';
-                                }
-                                if (value.length < 3) {
-                                  return 'Debe tener al menos 3 caracteres';
-                                }
-                                return null;
-                              },
-                            ),
-                            buildInput(
-                              controller: segundoApellidoController,
-                              label: "Segundo Apellido",
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu Segundo Apellido';
-                                }
-                                if (value.length < 3) {
-                                  return 'Debe tener al menos 3 caracteres';
-                                }
-                                return null;
-                              },
-                            ),
-                            buildInput(
-                              controller: curpController,
-                              label: "CURP",
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu CURP';
-                                }
-                                if (value.length != 18) {
-                                  return 'Tu CURP debe tener 18 caracteres';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 30),
-                            ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  _pageController.nextPage(
-                                    duration: const Duration(milliseconds: 500),
-                                    curve: Curves.ease,
-                                  );
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 50, vertical: 16),
-                              ),
-                              child: const Text("Siguiente"),
-                            ),
-                          ],
-                        ),
-                        // Página 2: Datos de cuenta
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 40),
-                            buildInput(
-                              controller: emailController,
-                              label: "Correo electrónico",
-                              keyboardType: TextInputType.emailAddress,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu correo';
-                                }
-                                if (!value.contains('@')) {
-                                  return 'Ingresa un correo válido';
-                                }
-                                return null;
-                              },
-                            ),
-                            buildInput(
-                              controller: passController,
-                              label: "Contraseña",
-                              obscureText: true,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu contraseña';
-                                }
-                                if (value.length < 8) {
-                                  return 'Debe tener al menos 8 caracteres';
-                                }
-                                return null;
-                              },
-                            ),
-                            buildInput(
-                              controller: confirmPassController,
-                              label: "Confirmar Contraseña",
-                              obscureText: true,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor confirma tu contraseña';
-                                }
-                                if (value != passController.text) {
-                                  return 'Las contraseñas no coinciden';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 30),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgPicture.asset(
+                'assets/images/Logo_Register_Patient.svg',
+                height: 150,
+                placeholderBuilder: (context) => const CircularProgressIndicator(),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Registro Paciente',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(30, 60, 30, 0),
+                    child: Form(
+                      key: _formKey,
+                      child: PageView(
+                        controller: _pageController,
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: [
+                          // Página 1: Datos personales
+                          SingleChildScrollView(
+                            child: Column(
                               children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.arrow_back),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                CustomInputField(
+                                  controller: nombresController,
+                                  label: "Nombre(s)",
+                                  icon: Icons.person_outline_outlined,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor ingresa tu nombre';
+                                    }
+                                    if (value.length < 3) {
+                                      return 'Debe constar de al menos 3 caracteres';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                CustomInputField(
+                                  controller: primerApellidoController,
+                                  label: "Primer Apellido",
+                                  icon: Icons.person_outline_outlined,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor ingrese su Primer Apellido';
+                                    }
+                                    if (value.length < 3) {
+                                      return 'Debe constar de al menos 3 caracteres';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                CustomInputField(
+                                  controller: segundoApellidoController,
+                                  label: "Segundo Apellido",
+                                  icon: Icons.person_outline_outlined,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor ingrese su Segundo Apellido';
+                                    }
+                                    if (value.length < 3) {
+                                      return 'Debe constar de al menos 3 caracteres';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                CustomInputField(
+                                  controller: curpController,
+                                  label: "CURP",
+                                  icon: Icons.perm_identity_outlined,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor ingrese su CURP';
+                                    }
+                                    if (value.length != 18) {
+                                      return 'Debe constar de 18 caracteres';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 30),
                                 ElevatedButton(
                                   onPressed: () {
-                                    _pageController.previousPage(
-                                      duration: const Duration(milliseconds: 500),
-                                      curve: Curves.ease,
-                                    );
+                                    if (_formKey.currentState!.validate()) {
+                                      _pageController.nextPage(
+                                        duration: const Duration(milliseconds: 500),
+                                        curve: Curves.ease,
+                                      );
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.grey,
+                                    backgroundColor: Colors.blue,
                                     foregroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
                                     ),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 30, vertical: 16),
+                                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                                   ),
-                                  child: const Text("Regresar"),
+                                  child: const Text("Siguiente"),
                                 ),
+                                const SizedBox(height: 20),
+                              ],
+                            ),
+                          ),
+
+                          // Página 2: Datos de cuenta
+                          SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.arrow_back),
+                                    onPressed: () {
+                                      _pageController.previousPage(
+                                        duration: const Duration(milliseconds: 500),
+                                        curve: Curves.ease,
+                                      );
+                                    },
+                                  ),
+                                ),
+                                CustomInputField(
+                                  controller: emailController,
+                                  label: "Correo electrónico",
+                                  icon: Icons.email_outlined,
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor ingresa tu correo';
+                                    }
+                                    if (!value.contains('@')) {
+                                      return 'Ingresa un correo válido';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                CustomInputField(
+                                  controller: passController,
+                                  label: "Contraseña",
+                                  icon: Icons.lock_outline_rounded,
+                                  obscureText: true,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor ingresa tu contraseña';
+                                    }
+                                    if (value.length < 8) {
+                                      return 'Debe tener al menos 8 caracteres';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                CustomInputField(
+                                  controller: confirmPassController,
+                                  label: "Confirmar Contraseña",
+                                  icon: Icons.lock_outline_rounded,
+                                  obscureText: true,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor confirma tu contraseña';
+                                    }
+                                    if (value != passController.text) {
+                                      return 'Las contraseñas no coinciden';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 30),
                                 isLoading
                                     ? const CircularProgressIndicator()
                                     : ElevatedButton(
@@ -313,33 +274,33 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     backgroundColor: Colors.blue,
                                     foregroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 30, vertical: 16),
+                                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                                   ),
                                   child: const Text("Registrarse"),
                                 ),
+                                if (error.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 20),
+                                    child: Text(error, style: const TextStyle(color: Colors.red)),
+                                  ),
+                                const SizedBox(height: 20),
                               ],
                             ),
-                            if (error.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 20),
-                                child: Text(error,
-                                    style: const TextStyle(color: Colors.red)),
-                              ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
+
+
 }
