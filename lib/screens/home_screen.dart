@@ -5,7 +5,6 @@ import 'recipe_list_screen.dart';
 import 'qr_detector_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-
   HomeScreen({super.key});
 
   @override
@@ -13,33 +12,53 @@ class HomeScreen extends StatelessWidget {
     final User? user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
-      backgroundColor: Color(0xFFF1F4F8),
-      appBar: AppBar(
-        backgroundColor: Color(0xFFF1F4F8),
-        title: Text('Bienvenido ${user?.displayName ?? user?.email ?? 'Usuario'}'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.qr_code_scanner),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => QRDetectorScreen()),
-              );
-            },
+      backgroundColor: const Color(0xFFF1F4F8),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            floating: false,
+            snap: false,
+            expandedHeight: 50,
+            backgroundColor: const Color(0xFFF1F4F8),
+            foregroundColor: Colors.black,
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: const EdgeInsets.only(left: 16, bottom: 12),
+              title: Text(
+                'Bienvenido ${user?.displayName ?? user?.email ?? 'Usuario'}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.qr_code_scanner, color: Colors.black),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => QRDetectorScreen()),
+                  );
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.person, color: Colors.black),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => EditProfileScreen()),
+                  );
+                },
+              ),
+            ],
           ),
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () {
-              //await FirebaseAuth.instance.signOut();
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => EditProfileScreen()),
-              );
-            },
+          SliverFillRemaining(
+            child: RecipeListScreen(),
           ),
         ],
       ),
-      body: RecipeListScreen(),
     );
   }
 }
