@@ -4,19 +4,18 @@ import 'package:product_list_app/screens/login_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:product_list_app/widgets/custom_input_field.dart';
 
-class RegisterPatientScreenPage extends StatefulWidget {
+class RegisterMedicalCenterScreen extends StatefulWidget {
   @override
-  State<RegisterPatientScreenPage> createState() => _RegistroPacientePageState();
+  State<RegisterMedicalCenterScreen> createState() => _RegisterMedicalCenterScreenState();
 }
 
-class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
+class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScreen> {
   final _formKey = GlobalKey<FormState>();
   final PageController _pageController = PageController();
 
-  final TextEditingController nombresController = TextEditingController();
-  final TextEditingController primerApellidoController = TextEditingController();
-  final TextEditingController segundoApellidoController = TextEditingController();
-  final TextEditingController curpController = TextEditingController();
+  final TextEditingController nombreFarmaciaController = TextEditingController();
+  final TextEditingController telefonoController = TextEditingController();
+  final TextEditingController direccionController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
   final TextEditingController confirmPassController = TextEditingController();
@@ -26,10 +25,9 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
 
   @override
   void dispose() {
-    nombresController.dispose();
-    primerApellidoController.dispose();
-    segundoApellidoController.dispose();
-    curpController.dispose();
+    nombreFarmaciaController.dispose();
+    telefonoController.dispose();
+    direccionController.dispose();
     emailController.dispose();
     passController.dispose();
     confirmPassController.dispose();
@@ -37,7 +35,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
     super.dispose();
   }
 
-  Future<void> registerUser() async {
+  Future<void> registerPharmacy() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         isLoading = true;
@@ -45,13 +43,13 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
       });
 
       try {
-        final userCredential = await FirebaseAuth.instance
+        final pharmacyCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
           email: emailController.text.trim(),
           password: passController.text.trim(),
         );
 
-        final user = userCredential.user;
+        final user = pharmacyCredential.user;
         if (user != null) {
           Navigator.pushReplacement(
             context,
@@ -78,6 +76,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF1F4F8),
+      resizeToAvoidBottomInset: true,
       body: Padding(
         padding: const EdgeInsets.only(top: 140),
         child: Center(
@@ -85,31 +84,33 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SvgPicture.asset(
-                'assets/images/Logo_Register_Patient.svg',
+                'assets/images/Logo_Register_Pharmacy.svg',
                 height: 150,
                 placeholderBuilder: (context) => const CircularProgressIndicator(),
               ),
               const SizedBox(height: 10),
               const Text(
-                'Registro Paciente',
+                'Registro Farmacia',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              Expanded(
+              Flexible(
                 child: Card(
                   elevation: 4,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                   color: Colors.white,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(30, 60, 30, 0),
+                    padding: const EdgeInsets.fromLTRB(30, 20, 30, 0),
                     child: Form(
                       key: _formKey,
                       child: PageView(
                         controller: _pageController,
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
-                          // Página 1: Datos personales
+                          // Página 1: Datos farmacia
                           SingleChildScrollView(
                             child: Column(
                               children: [
@@ -124,62 +125,40 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                 ),
                                 const SizedBox(height: 10),
                                 CustomInputField(
-                                  controller: nombresController,
-                                  label: "Nombre(s)",
-                                  icon: Icons.person_outline_outlined,
+                                  controller: nombreFarmaciaController,
+                                  label: "Nombre de la Farmacia",
+                                  icon: Icons.local_pharmacy_outlined,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Por favor ingresa tu nombre';
-                                    }
-                                    if (value.length < 3) {
-                                      return 'Debe constar de al menos 3 caracteres';
+                                      return 'Por favor ingresa el nombre de la farmacia';
                                     }
                                     return null;
                                   },
                                 ),
                                 CustomInputField(
-                                  controller: primerApellidoController,
-                                  label: "Primer Apellido",
-                                  icon: Icons.person_outline_outlined,
+                                  controller: direccionController,
+                                  label: "Dirección",
+                                  icon: Icons.location_on_outlined,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Por favor ingrese su Primer Apellido';
-                                    }
-                                    if (value.length < 3) {
-                                      return 'Debe constar de al menos 3 caracteres';
+                                      return 'Por favor ingresa la dirección';
                                     }
                                     return null;
                                   },
                                 ),
                                 CustomInputField(
-                                  controller: segundoApellidoController,
-                                  label: "Segundo Apellido",
-                                  icon: Icons.person_outline_outlined,
+                                  controller: telefonoController,
+                                  label: "Teléfono",
+                                  icon: Icons.phone_outlined,
+                                  keyboardType: TextInputType.phone,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Por favor ingrese su Segundo Apellido';
-                                    }
-                                    if (value.length < 3) {
-                                      return 'Debe constar de al menos 3 caracteres';
+                                      return 'Por favor ingresa el teléfono';
                                     }
                                     return null;
                                   },
                                 ),
-                                CustomInputField(
-                                  controller: curpController,
-                                  label: "CURP",
-                                  icon: Icons.perm_identity_outlined,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Por favor ingrese su CURP';
-                                    }
-                                    if (value.length != 18) {
-                                      return 'Debe constar de 18 caracteres';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 30),
+                                const SizedBox(height: 20),
                                 ElevatedButton(
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
@@ -204,7 +183,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                             ),
                           ),
 
-                          // Página 2: Datos de cuenta
+                          // Página 2: Cuenta farmacia
                           SingleChildScrollView(
                             child: Column(
                               children: [
@@ -265,11 +244,11 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     return null;
                                   },
                                 ),
-                                const SizedBox(height: 30),
+                                const SizedBox(height: 20),
                                 isLoading
                                     ? const CircularProgressIndicator()
                                     : ElevatedButton(
-                                  onPressed: registerUser,
+                                  onPressed: registerPharmacy,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.blue,
                                     foregroundColor: Colors.white,
@@ -278,7 +257,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     ),
                                     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                                   ),
-                                  child: const Text("Registrarse"),
+                                  child: const Text("Registrar Farmacia"),
                                 ),
                                 if (error.isNotEmpty)
                                   Padding(
@@ -301,6 +280,5 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
       ),
     );
   }
-
 
 }

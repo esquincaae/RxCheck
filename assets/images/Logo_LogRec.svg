@@ -1,1 +1,22 @@
-<?xml version="1.0" ?><svg style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="_x31_9_x2C__medica_x2C__Health_x2C__healthcare_x2C__sign"><g id="XMLID_4175_"><g id="XMLID_4176_"><path d="M256,66c104.93,0,190,85.07,190,190c0,104.93-85.07,190-190,190     S66,360.93,66,256C66,151.07,151.07,66,256,66z" id="XMLID_4241_" style="fill:#3F4751;"/><circle cx="441" cy="61" id="XMLID_549_" r="35" style="fill:#D94556;"/><path d="M71,411c13.81,0,25,11.19,25,25s-11.19,25-25,25s-25-11.19-25-25     S57.19,411,71,411z" id="XMLID_548_" style="fill:#D94556;"/><polygon id="XMLID_547_" points="376,216 376,296 296,296 296,376 216,376 216,296 136,296 136,216      216,216 216,136 296,136 296,216    " style="fill:#5CBEFF;"/><circle cx="458.5" cy="163.5" id="XMLID_546_" r="7.5" style="fill:#FFD400;"/><circle cx="453.5" cy="433.5" id="XMLID_545_" r="7.5" style="fill:#FFD400;"/><circle cx="348.5" cy="38.5" id="XMLID_544_" r="7.5" style="fill:#FFD400;"/><circle cx="178.5" cy="458.5" id="XMLID_543_" r="7.5" style="fill:#FFD400;"/><circle cx="93.5" cy="38.5" id="XMLID_542_" r="7.5" style="fill:#FFD400;"/><circle cx="43.5" cy="351" id="XMLID_541_" r="7.5" style="fill:#FFD400;"/><path d="M31,261c-2.761,0-5-2.238-5-5c0-61.433,23.925-119.19,67.367-162.633     S194.567,26,256,26c2.761,0,5,2.239,5,5s-2.239,5-5,5C134.691,36,36,134.691,36,256C36,258.762,33.761,261,31,261z" id="XMLID_540_" style="fill:#079CFF;"/><path d="M256,486c-2.761,0-5-2.238-5-5s2.239-5,5-5c121.309,0,220-98.691,220-220     c0-2.762,2.239-5,5-5s5,2.238,5,5c0,61.434-23.925,119.19-67.367,162.633S317.433,486,256,486z" id="XMLID_539_" style="fill:#079CFF;"/></g></g></g><g id="Layer_1"/></svg>
+<?xml version="1.0" ?>
+    <svg style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <g id="_x31_9_x2C__medica_x2C__Health_x2C__healthcare_x2C__sign">
+            <g id="XMLID_4175_">
+                <g id="XMLID_4176_">
+                    <path d="M256,66c104.93,0,190,85.07,190,190c0,104.93-85.07,190-190,190     S66,360.93,66,256C66,151.07,151.07,66,256,66z" id="XMLID_4241_" style="fill:#F1F4F8;"/>
+                    <circle cx="441" cy="61" id="XMLID_549_" r="35" style="fill:#D94556;"/>
+                    <path d="M71,411c13.81,0,25,11.19,25,25s-11.19,25-25,25s-25-11.19-25-25     S57.19,411,71,411z" id="XMLID_548_" style="fill:#D94556;"/>
+                    <polygon id="XMLID_547_" points="376,216 376,296 296,296 296,376 216,376 216,296 136,296 136,216      216,216 216,136 296,136 296,216    " style="fill:#2196F3;"/>
+                    <circle cx="458.5" cy="163.5" id="XMLID_546_" r="7.5" style="fill:#FFD400;"/>
+                    <circle cx="453.5" cy="433.5" id="XMLID_545_" r="7.5" style="fill:#FFD400;"/>
+                    <circle cx="348.5" cy="38.5" id="XMLID_544_" r="7.5" style="fill:#FFD400;"/>
+                    <circle cx="178.5" cy="458.5" id="XMLID_543_" r="7.5" style="fill:#FFD400;"/>
+                    <circle cx="93.5" cy="38.5" id="XMLID_542_" r="7.5" style="fill:#FFD400;"/>
+                    <circle cx="43.5" cy="351" id="XMLID_541_" r="7.5" style="fill:#FFD400;"/>
+                    <path d="M31,261c-2.761,0-5-2.238-5-5c0-61.433,23.925-119.19,67.367-162.633     S194.567,26,256,26c2.761,0,5,2.239,5,5s-2.239,5-5,5C134.691,36,36,134.691,36,256C36,258.762,33.761,261,31,261z" id="XMLID_540_" style="fill:#2196F3;"/>
+                    <path d="M256,486c-2.761,0-5-2.238-5-5s2.239-5,5-5c121.309,0,220-98.691,220-220     c0-2.762,2.239-5,5-5s5,2.238,5,5c0,61.434-23.925,119.19-67.367,162.633S317.433,486,256,486z" id="XMLID_539_" style="fill:#2196F3;"/>
+                </g>
+            </g>
+        </g>
+    <g id="Layer_1"/>
+    </svg>
