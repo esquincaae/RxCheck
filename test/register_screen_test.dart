@@ -6,7 +6,7 @@ void main() {
   testWidgets('Formulario de registro funciona correctamente', (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: RegisterScreen(),
+        home: RegisterPatientScreenPage(),
       ),
     );
 

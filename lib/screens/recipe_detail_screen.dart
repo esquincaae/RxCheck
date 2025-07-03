@@ -3,9 +3,9 @@ import '../models/product.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class ProductDetailScreen extends StatelessWidget {
+class RecipeDetailScreen extends StatelessWidget {
   final Product product;
-  const ProductDetailScreen({super.key, required this.product});
+  const RecipeDetailScreen({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {

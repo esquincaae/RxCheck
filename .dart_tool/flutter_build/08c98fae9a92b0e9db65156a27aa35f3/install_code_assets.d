@@ -1,1 +1,0 @@
- C:\\Users\\edrey\\OneDrive\\Escritorio\\UP\\moviles\ 2\\appmovil-fakestoreapi\\.dart_tool\\flutter_build\\08c98fae9a92b0e9db65156a27aa35f3\\native_assets.json: 

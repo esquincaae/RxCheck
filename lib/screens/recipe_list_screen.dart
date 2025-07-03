@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/product.dart';
-import 'recipe_detail_screen.dart';
 import '../widgets/product_card.dart';
 
 class RecipeListScreen extends StatefulWidget {

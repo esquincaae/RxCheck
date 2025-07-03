@@ -4,6 +4,7 @@ import 'package:product_list_app/screens/login_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:product_list_app/widgets/custom_input_field.dart';
 
+//Refactorizado :))
 class RegisterPatientScreenPage extends StatefulWidget {
   @override
   State<RegisterPatientScreenPage> createState() => _RegistroPacientePageState();
@@ -74,35 +75,77 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
     }
   }
 
+  // Estilos y tamaños responsivos centralizados
+  late double screenWidth;
+  late double screenHeight;
+  late double basePadding;
+  late double baseFontSize;
+  late double buttonVerticalPadding;
+  late double buttonHorizontalPadding;
+
+  static const Color backgroundColor = Color(0xFFF1F4F8);
+  static const Color primaryColor = Colors.blue;
+  static const Color cardColor = Colors.white;
+  static const Color errorColor = Colors.red;
+
+  final BorderRadius cardBorderRadius = BorderRadius.circular(20);
+  final BorderRadius buttonBorderRadius = BorderRadius.circular(20);
+
+  TextStyle getTitleTextStyle() =>
+      TextStyle(fontSize: baseFontSize * 1.5, fontWeight: FontWeight.bold);
+
+  ButtonStyle getButtonStyle() => ElevatedButton.styleFrom(
+    backgroundColor: primaryColor,
+    foregroundColor: Colors.white,
+    shape: RoundedRectangleBorder(borderRadius: buttonBorderRadius),
+    padding: EdgeInsets.symmetric(
+        horizontal: buttonHorizontalPadding, vertical: buttonVerticalPadding),
+  );
+
+  EdgeInsets getCardPadding() => EdgeInsets.fromLTRB(
+      basePadding * 1.5, basePadding * 3, basePadding * 1.5, 0);
+
+  EdgeInsets getScreenPadding() => EdgeInsets.only(top: screenHeight * 0.12);
+
   @override
   Widget build(BuildContext context) {
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
+
+    basePadding = screenWidth * 0.04; // 4% ancho pantalla
+    baseFontSize = screenWidth * 0.05; // 5% ancho pantalla para base font size
+    buttonVerticalPadding = basePadding * 0.8;
+    buttonHorizontalPadding = basePadding * 3;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F4F8),
+      backgroundColor: backgroundColor,
       body: Padding(
-        padding: const EdgeInsets.only(top: 140),
+        padding: getScreenPadding(),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SvgPicture.asset(
                 'assets/images/Logo_Register_Patient.svg',
-                height: 150,
-                placeholderBuilder: (context) => const CircularProgressIndicator(),
+                height: screenHeight * 0.18,
+                placeholderBuilder: (context) =>
+                const CircularProgressIndicator(),
               ),
-              const SizedBox(height: 10),
-              const Text(
+              SizedBox(height: basePadding / 2),
+              Text(
                 'Registro Paciente',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: getTitleTextStyle(),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: basePadding / 2),
               Expanded(
                 child: Card(
                   elevation: 4,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                  color: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: cardBorderRadius),
+                  margin: EdgeInsets.symmetric(
+                      horizontal: basePadding * 0.8, vertical: basePadding * 1.2),
+                  color: cardColor,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(30, 60, 30, 0),
+                    padding: getCardPadding(),
                     child: Form(
                       key: _formKey,
                       child: PageView(
@@ -122,7 +165,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     },
                                   ),
                                 ),
-                                const SizedBox(height: 10),
+                                SizedBox(height: basePadding / 2),
                                 CustomInputField(
                                   controller: nombresController,
                                   label: "Nombre(s)",
@@ -179,7 +222,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     return null;
                                   },
                                 ),
-                                const SizedBox(height: 30),
+                                SizedBox(height: basePadding * 1.5),
                                 ElevatedButton(
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
@@ -189,17 +232,10 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                       );
                                     }
                                   },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue,
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                                  ),
+                                  style: getButtonStyle(),
                                   child: const Text("Siguiente"),
                                 ),
-                                const SizedBox(height: 20),
+                                SizedBox(height: basePadding),
                               ],
                             ),
                           ),
@@ -265,27 +301,21 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     return null;
                                   },
                                 ),
-                                const SizedBox(height: 30),
+                                SizedBox(height: basePadding * 1.5),
                                 isLoading
                                     ? const CircularProgressIndicator()
                                     : ElevatedButton(
                                   onPressed: registerUser,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue,
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                                  ),
+                                  style: getButtonStyle(),
                                   child: const Text("Registrarse"),
                                 ),
                                 if (error.isNotEmpty)
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 20),
-                                    child: Text(error, style: const TextStyle(color: Colors.red)),
+                                    padding: EdgeInsets.only(top: basePadding),
+                                    child: Text(error,
+                                        style: TextStyle(color: errorColor)),
                                   ),
-                                const SizedBox(height: 20),
+                                SizedBox(height: basePadding),
                               ],
                             ),
                           ),
@@ -301,6 +331,5 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
       ),
     );
   }
-
-
 }
+

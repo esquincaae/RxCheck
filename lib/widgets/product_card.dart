@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../screens/recipe_detail_screen.dart';
-import '../cart/cart.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ProductCard extends StatelessWidget {
@@ -11,87 +10,54 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ProductDetailScreen(product: product),
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final cardSize = screenWidth * 0.2;
+
+    return SizedBox(
+      //width: cardSize,
+      height: cardSize,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(15),
+        onTap: () {
+          // Acción al presionar la card
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => RecipeDetailScreen(product: product),
+            ),
+          );
+        },
+        child: Card(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
           ),
-        );
-      },
-      child: Card(
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        color: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: Colors.grey.shade300),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(12),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  product.image,
-                  height: 180,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    height: 180,
-                    color: Colors.grey[300],
-                    child: Icon(Icons.broken_image, size: 48, color: Colors.grey[600]),
-                  ),
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                product.title,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: 4),
-              Text(
-                '\$${product.price.toStringAsFixed(2)}',
-                style: TextStyle(color: Colors.green, fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerRight,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Cart.add(product);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('${product.title} agregado al carrito'),
-                        duration: Duration(seconds: 2),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Título alineado a la izquierda
+                    Expanded(
+                      child: Text(
+                        product.title,
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    );
-                  },
-                  icon: SvgPicture.asset(
-                    'assets/icons/recipe.svg',
-                    // asegúrate de corregir la ruta
-                    width: 18,
-                    height: 18,
-                    color: Colors.white,
-                  ),
-                  label: Text(
-                    'Abrir Receta',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                    minimumSize: Size(0, 0),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    SvgPicture.asset(
+                      'assets/icons/recipe.svg',
+                      width: 25,
+                      height: 25,
+                      color: Colors.blue,
+                    ),
+                  ],
                 ),
               ),
             ],

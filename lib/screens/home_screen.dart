@@ -22,8 +22,14 @@ class HomeScreen extends StatelessWidget {
             expandedHeight: 50,
             backgroundColor: const Color(0xFFF1F4F8),
             foregroundColor: Colors.black,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
             flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 16, bottom: 12),
+              titlePadding: const EdgeInsets.only(left: 56, bottom: 17), // deja espacio para el icono
               title: Text(
                 'Bienvenido ${user?.displayName ?? user?.email ?? 'Usuario'}',
                 style: const TextStyle(
@@ -54,11 +60,45 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
+
           SliverFillRemaining(
-            child: RecipeListScreen(),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Card(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  side: BorderSide(color: Colors.blue.shade100),
+                ),
+                elevation: 10,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center, // alineación horizontal centrada
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12,right: 12, top: 10.0, bottom: 10),
+                      child: Text(
+                        'Historial de Recetas',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center, // asegura que el texto se centre si ocupa varias líneas
+                      ),
+                    ),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10,right: 10,bottom: 10),
+                        child: RecipeListScreen(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),
     );
   }
+
 }

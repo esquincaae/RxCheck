@@ -1,0 +1,1 @@
+ C:\\Users\\edrey\\OneDrive\\Escritorio\\UP\\AppRecetas\\.dart_tool\\flutter_build\\4617e716ac64d29d134fb2ed4bee7ba0\\native_assets.json: 

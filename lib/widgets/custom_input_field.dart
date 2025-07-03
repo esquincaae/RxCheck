@@ -8,6 +8,7 @@ class CustomInputField extends StatelessWidget {
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
   final IconData? icon;
+  final bool isDisabled;
 
   const CustomInputField({
     super.key,
@@ -18,6 +19,7 @@ class CustomInputField extends StatelessWidget {
     this.keyboardType,
     this.validator,
     this.icon,
+    this.isDisabled = false,
   });
 
   @override
@@ -30,6 +32,7 @@ class CustomInputField extends StatelessWidget {
         enabled: enabled,
         keyboardType: keyboardType,
         validator: validator,
+        readOnly: isDisabled,
         decoration: InputDecoration(
           prefixIcon: icon != null ? Icon(icon, color: Colors.blue) : null,
           labelText: label,

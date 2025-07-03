@@ -110,6 +110,7 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
                         controller: _pageController,
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
+
                           // Página 1: Datos farmacia
                           SingleChildScrollView(
                             child: Column(
@@ -123,7 +124,6 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
                                     },
                                   ),
                                 ),
-                                const SizedBox(height: 10),
                                 CustomInputField(
                                   controller: nombreFarmaciaController,
                                   label: "Nombre de la Farmacia",
