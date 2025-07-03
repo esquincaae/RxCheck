@@ -1,19 +1,14 @@
-# Flutter
+# Flutter/Dart
 .dart_tool/
 build/
-
-# iOS
-Pods/
-
-# macOS
-.DS_Store
-
-# VSCode
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+.idea/
 .vscode/
 
-# Android
-.gradle/
-*.iml
-
-# General
-.idea/
+# Others
+*.apk
+*.ipa
