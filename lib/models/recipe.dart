@@ -1,11 +1,11 @@
-class Product {
+class Recipe {
   final int id;
   final String title;
   final String description;
   final double price;
   final String image;
 
-  Product({
+  Recipe({
     required this.id,
     required this.title,
     required this.description,
@@ -13,8 +13,8 @@ class Product {
     required this.image,
   });
 
-  factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
+  factory Recipe.fromJson(Map<String, dynamic> json) {
+    return Recipe(
       id: json['id'],
       title: json['title'] ?? 'Sin título',
       description: json['description'] ?? '',

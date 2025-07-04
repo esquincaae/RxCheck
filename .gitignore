@@ -1,14 +1,74 @@
-# Flutter/Dart
+# Flutter/Dart related
 .dart_tool/
+.packages
 build/
+.pub/
 .flutter-plugins
 .flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
+.merlin
+*.lock
+*.log
+
+# Android specific
+android/.gradle/
+android/app/build/
+android/build/
+
+# iOS specific
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/ServiceDefinitions.json
+ios/Runner.xcworkspace/
+ios/build/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+
+# IDEs
 .idea/
 .vscode/
 
-# Others
+# macOS
+macos/Flutter/ephemeral/
+
+# Windows
+windows/Flutter/ephemeral/
+
+# Web
+web/.dart_tool/
+web/build/
+
+# Executables
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Obsolete/backup files
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# APKs
 *.apk
-*.ipa
+
+# AABs
+*.aab
+
+# Dill files
+*.dill
+
+# Specific heavy files identified in your repo
+.dart_tool/flutter_build/
+build/app/outputs/apk/debug/
+
+# Coverage
+coverage/
+
+# Misc
+*.iml
+*.ipr
+*.iws

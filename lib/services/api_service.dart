@@ -1,23 +1,23 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/product.dart';
+import '../models/recipe.dart';
 
 // Obtener lista de productos
-Future<List<Product>> fetchProducts() async {
+Future<List<Recipe>> fetchProducts() async {
   final response = await http.get(Uri.parse('https://fakestoreapi.com/products'));
   if (response.statusCode == 200) {
     List<dynamic> data = json.decode(response.body);
-    return data.map((item) => Product.fromJson(item)).toList();
+    return data.map((item) => Recipe.fromJson(item)).toList();
   } else {
     throw Exception('Error al obtener productos');
   }
 }
 
 // Obtener detalle de producto por id
-Future<Product> fetchProductDetail(int id) async {
+Future<Recipe> fetchProductDetail(int id) async {
   final response = await http.get(Uri.parse('https://fakestoreapi.com/products/$id'));
   if (response.statusCode == 200) {
-    return Product.fromJson(json.decode(response.body));
+    return Recipe.fromJson(json.decode(response.body));
   } else {
     throw Exception('Error al obtener detalle del producto');
   }

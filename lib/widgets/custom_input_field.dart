@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+class AlwaysDisabledFocusNode extends FocusNode {
+  @override
+  bool get hasFocus => false;
+}
+
 class CustomInputField extends StatelessWidget {
   final String label;
   final TextEditingController controller;
@@ -9,6 +14,7 @@ class CustomInputField extends StatelessWidget {
   final String? Function(String?)? validator;
   final IconData? icon;
   final bool isDisabled;
+  final bool readOnly;
 
   const CustomInputField({
     super.key,
@@ -20,6 +26,7 @@ class CustomInputField extends StatelessWidget {
     this.validator,
     this.icon,
     this.isDisabled = false,
+    this.readOnly = false,
   });
 
   @override
@@ -32,7 +39,10 @@ class CustomInputField extends StatelessWidget {
         enabled: enabled,
         keyboardType: keyboardType,
         validator: validator,
-        readOnly: isDisabled,
+        // Si está deshabilitado, no permitir edición ni selección ni foco
+        readOnly: isDisabled || readOnly,
+        enableInteractiveSelection: !(isDisabled || readOnly),
+        focusNode: (isDisabled || readOnly) ? AlwaysDisabledFocusNode() : null,
         decoration: InputDecoration(
           prefixIcon: icon != null ? Icon(icon, color: Colors.blue) : null,
           labelText: label,

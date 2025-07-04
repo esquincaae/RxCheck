@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:label="product_list_app"
+        android:label="RxCheck"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

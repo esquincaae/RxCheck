@@ -11,19 +11,20 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
   String? qrCode;
   bool _isScanning = false; // Controla si la cámara está encendida
 
-  void _showQRCodeDialog(String code) {
+  void _errorQRCodeDialog() {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('Código QR Detectado'),
-        content: Text(code),
+        backgroundColor: Colors.white,
+        title: Text('Código QR Invalido', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),),
+        content: Text('Este codigo QR no existe en nuestra base de datos.', style: TextStyle(color: Colors.black),),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               cameraController.start(); // Reanuda para otro escaneo
             },
-            child: Text('Cerrar'),
+            child: Text('Cerrar', style: TextStyle(color: Colors.blue),),
           ),
         ],
       ),
@@ -98,7 +99,7 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
                               setState(() {
                                 _isScanning = false;
                               });
-                              _showQRCodeDialog(code);
+                              _errorQRCodeDialog(); //<-------------- aqui se usa el QR
                             }
                           }
                         },
@@ -139,7 +140,7 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
               ),
             ),
             icon: Icon(_isScanning ? Icons.stop : Icons.camera_alt, color: Colors.white,),
-            label: Text(_isScanning ? 'Detener Validacion' : 'Validar',
+            label: Text(_isScanning ? 'Detener' : 'Validar',
               style: TextStyle(fontSize: 16,
               color: _isScanning ? Colors.white : Colors.white,
               fontWeight: FontWeight.bold),

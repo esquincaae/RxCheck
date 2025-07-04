@@ -65,6 +65,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    super.dispose();
+  }
+
   Future<void> _pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -111,29 +119,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Future<void> _deleteAccount() async {
-    final user = _auth.currentUser;
-    if (user == null) return;
-    try {
-      await _firestore.collection('users').doc(user.uid).delete();
-      await user.delete();
-      await _secureStorage.deleteAll();
-      if (!mounted) return;
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => SelectModeLoginScreen()),
-            (route) => false,
-      );
-    } catch (e) {
-      debugPrint('Error deleting account: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al eliminar la cuenta')),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
@@ -183,13 +172,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+
                         CustomInputField(
                           label: 'Nombre',
                           controller: nameController,
                           icon: MdiIcons.account,
                           validator: (value) =>
                           value == null || value.isEmpty ? 'Ingresa tu nombre' : null,
+                          isDisabled: true,
                         ),
+
                         CustomInputField(
                           label: 'Correo electrónico',
                           controller: emailController,
@@ -198,6 +190,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           validator: (value) =>
                           value == null || value.isEmpty ? 'Ingresa tu correo' : null,
                         ),
+                        
                         CustomInputField(
                           label: 'Teléfono',
                           controller: phoneController,
@@ -222,7 +215,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: [
                 Row(
                   children: [
-                    Expanded(
+                    /*Expanded(
                       child: CustomButton(
                         icon: Icon(MdiIcons.delete),
                         text: 'Eliminar cuenta',
@@ -230,7 +223,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         onPressed: _deleteAccount,
                         padding: EdgeInsets.symmetric(vertical: 16.h),
                       ),
-                    ),
+                    ),*/
                     SizedBox(width: 10.w),
                     Expanded(
                       child: CustomButton(
@@ -258,6 +251,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                       ),
                     ),
+                    SizedBox(width: 10.w,),
+                    Expanded(child:  CustomButton(
+                        icon: Icon(MdiIcons.update),
+                        text: 'Actualizar',
+                        onPressed: _updateProfile,
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
+                      ),
+                    )
+
+
                   ],
                 ),
                 SizedBox(height: 10.h),
@@ -265,12 +268,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   alignment: Alignment.center,
                   child: SizedBox(
                     width: 200.w, // ancho fijo para que no sea tan ancho, ajusta como quieras
-                    child: CustomButton(
-                      icon: Icon(MdiIcons.update),
-                      text: 'Actualizar',
-                      onPressed: _updateProfile,
-                      padding: EdgeInsets.symmetric(vertical: 16.h),
-                    ),
+
                   ),
                 ),
               ],

@@ -13,6 +13,7 @@ class RecoverPasswordScreen extends StatefulWidget {
 class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
+  final curpController = TextEditingController();
   bool isLoading = false;
   String message = '';
 
@@ -103,10 +104,10 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                             },
                           ),
                           CustomInputField(
-                            controller: emailController,
+                            controller: curpController,
                             label: "ingresa tu CURP",
                             icon: Icons.person_outlined,
-                            keyboardType: TextInputType.emailAddress,
+                            keyboardType: TextInputType.text,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Por favor ingresa tu CURP';
