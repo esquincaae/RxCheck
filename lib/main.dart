@@ -52,11 +52,16 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return SessionTimeoutHandler(
-      child: MaterialApp(                                       //MAterial APP
+      child: MaterialApp(                                       //Material APP
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'Recetas Medicas',
-        theme: ThemeData(primarySwatch: Colors.blue),
+        theme: ThemeData(
+          appBarTheme: AppBarTheme(backgroundColor: Color(0xFFF1F4F8),
+                                    foregroundColor: Colors.black),
+            scaffoldBackgroundColor: Color(0xFFF1F4F8),
+            progressIndicatorTheme: ProgressIndicatorThemeData(color: Colors.blue,),
+            primarySwatch: Colors.blue),
         home: AuthWrapper(),
       ),
     );

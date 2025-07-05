@@ -31,24 +31,33 @@ class MedicineCard extends StatelessWidget {
             padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  child: Text(
-                    medicine.name,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      medicine.name,
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.left,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
-                SvgPicture.asset(
-                  'assets/icons/capsule.svg',
-                  width: 25,
-                  height: 25,
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SvgPicture.asset(
+                    'assets/icons/medicine.svg',
+                    width: 25,
+                    height: 25,
+                  ),
                 ),
               ],
             ),
           ),
+
         ],
       ),
     );

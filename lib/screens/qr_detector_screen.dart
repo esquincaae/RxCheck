@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'recipe_scanned_screen.dart';
 
 class QRDetectorScreen extends StatefulWidget {
   @override
@@ -99,8 +100,11 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
                               setState(() {
                                 _isScanning = false;
                               });
-                              _errorQRCodeDialog(); //<-------------- aqui se usa el QR
-                            }
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => RecipeScannedScreen(pdfUrl: code,)));
+                               //_errorQRCodeDialog(); //<-------------- aqui se usa el QR
+                            }/*else{
+
+                            }*/
                           }
                         },
                       )

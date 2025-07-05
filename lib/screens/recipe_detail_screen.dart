@@ -1,60 +1,61 @@
 import 'package:flutter/material.dart';
-import '../models/medicine.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'Medicine_list_screen.dart';
 import '../models/recipe.dart';
 
 class RecipeDetailScreen extends StatelessWidget {
-  //final Medicine medicine;
   final Recipe recipe;
   const RecipeDetailScreen({super.key, required this.recipe});
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF1F4F8),
-      body: Column(
-        children: [
-          Expanded(
-            child: CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  pinned: true,
-                  floating: false,
-                  snap: false,
-                  expandedHeight: 50,
-                  backgroundColor: const Color(0xFFF1F4F8),
-                  foregroundColor: Colors.black,
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  flexibleSpace: const FlexibleSpaceBar(
-                    titlePadding: EdgeInsets.only(left: 105, bottom: 17),
-                    title: Text(
-                      'Detalles de la Receta',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  // SliverAppBar simulada
+                  Container(
+                    height: 60,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        const SizedBox(width: 8),
+                        const Expanded(
+                          child: Text(
+                            'Detalles de la Receta',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
 
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Padding(
+                  Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Align(
                       alignment: Alignment.topCenter,
                       child: FractionallySizedBox(
-                        widthFactor: 0.95, // opcional para margen horizontal
-                        child: SizedBox(
-                          height: 450, // ajusta según el espacio que desees
+                        widthFactor: 0.95,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight: screenHeight * 0.45, // 45% de la pantalla
+                            minHeight: 300,
+                          ),
                           child: Card(
                             color: Colors.white,
                             elevation: 2,
@@ -65,7 +66,6 @@ class RecipeDetailScreen extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.all(12),
                               child: Column(
-                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   const Text(
                                     'Lista de Medicamentos',
@@ -84,41 +84,39 @@ class RecipeDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
 
-          const SizedBox(height: 12), // un espacio entre el card y el texto
-          const Text(
-            'Muestra este QR en la Farmacia',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 8), // espacio entre texto e imagen
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                recipe.image,
-                height: 220,
-                fit: BoxFit.contain,
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Muestra este QR en la Farmacia',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: FractionallySizedBox(
+                      widthFactor: 0.7,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          recipe.image,
+                          height: screenHeight * 0.25,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
-
-
-
-
-
 
   Future<Recipe> fetchMedicineDetail(int id) async {
     final response = await http.get(Uri.parse('https://fakestoreapi.com/products/$id'));
