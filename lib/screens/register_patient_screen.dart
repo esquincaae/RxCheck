@@ -14,10 +14,10 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
   final _formKey = GlobalKey<FormState>();
   final PageController _pageController = PageController();
 
+  final TextEditingController curpController = TextEditingController();
   final TextEditingController nombresController = TextEditingController();
   final TextEditingController primerApellidoController = TextEditingController();
   final TextEditingController segundoApellidoController = TextEditingController();
-  final TextEditingController curpController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
   final TextEditingController confirmPassController = TextEditingController();
@@ -167,6 +167,20 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                 ),
                                 SizedBox(height: basePadding / 2),
                                 CustomInputField(
+                                  controller: curpController,
+                                  label: "CURP",
+                                  icon: Icons.perm_identity_outlined,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor ingrese su CURP';
+                                    }
+                                    if (value.length != 18) {
+                                      return 'Debe constar de 18 caracteres';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                CustomInputField(
                                   controller: nombresController,
                                   label: "Nombre(s)",
                                   icon: Icons.person_outline_outlined,
@@ -204,20 +218,6 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     }
                                     if (value.length < 3) {
                                       return 'Debe constar de al menos 3 caracteres';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                CustomInputField(
-                                  controller: curpController,
-                                  label: "CURP",
-                                  icon: Icons.perm_identity_outlined,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Por favor ingrese su CURP';
-                                    }
-                                    if (value.length != 18) {
-                                      return 'Debe constar de 18 caracteres';
                                     }
                                     return null;
                                   },

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'custom_card.dart';
 import '../models/medicine.dart';
-import '../screens/medicine_detail_screen.dart';
 
 class MedicineCard extends StatelessWidget {
   final Medicine medicine;
@@ -16,14 +15,6 @@ class MedicineCard extends StatelessWidget {
 
     return CustomCard(
       height: cardSize,
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => MedicineDetailScreen(medicine: medicine),
-          ),
-        );
-      },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

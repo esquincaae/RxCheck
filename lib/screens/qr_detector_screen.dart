@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'recipe_scanned_screen.dart';
+import 'recipe_detail_screen.dart';
+import '../models/recipe.dart';
 
 class QRDetectorScreen extends StatefulWidget {
   @override
@@ -10,6 +11,8 @@ class QRDetectorScreen extends StatefulWidget {
 class _QRDetectorScreenState extends State<QRDetectorScreen> {
   final MobileScannerController cameraController = MobileScannerController();
   String? qrCode;
+  Recipe? recipe;
+
   bool _isScanning = false; // Controla si la cámara está encendida
 
   void _errorQRCodeDialog() {
@@ -95,13 +98,14 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
                             if (qrCode != code) {
                               setState(() {
                                 qrCode = code;
+                                //recipe.code;
                               });
                               cameraController.stop();
                               setState(() {
                                 _isScanning = false;
                               });
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => RecipeScannedScreen(pdfUrl: code,)));
-                               //_errorQRCodeDialog(); //<-------------- aqui se usa el QR
+                              //Navigator.push(context, MaterialPageRoute(builder: (_) => RecipeDetailScreen(recipe: recipe)));
+                               _errorQRCodeDialog(); //<-------------- aqui se usa el QR
                             }/*else{
 
                             }*/
