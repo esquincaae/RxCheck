@@ -13,6 +13,7 @@ build/
 android/.gradle/
 android/app/build/
 android/build/
+android/key.properties
 
 # iOS specific
 ios/Flutter/Flutter.framework
@@ -72,3 +73,5 @@ coverage/
 *.iml
 *.ipr
 *.iws
+*.properties
+*.jks
