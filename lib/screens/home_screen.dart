@@ -22,14 +22,8 @@ class HomeScreen extends StatelessWidget {
             expandedHeight: 50,
             backgroundColor: const Color(0xFFF1F4F8),
             foregroundColor: Colors.black,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
             flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 56, bottom: 17), // deja espacio para el icono
+              titlePadding: const EdgeInsets.only(left: 20, bottom: 17), // deja espacio para el icono
               title: Text(
                 'Bienvenido ${user?.displayName ?? user?.email ?? 'Usuario'}',
                 style: const TextStyle(

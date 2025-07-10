@@ -43,7 +43,7 @@ dependencies:
   flutter_vector_icons: ^2.0.0 #iconos
   image_picker: ^1.0.7 #imagen de perfil
   mobile_scanner: ^3.0.1 #escaner de QR
-  permission_handler: ^11.0.1
+  permission_handler: ^11.0.1 #Manejador de Permisos
   screen_protector: ^1.4.2+1 #evitar capturas de pantalla
   local_auth: ^2.3.0 #sensor de huella
   flutter_screenutil: ^5.9.0 #aplicacion responsiva
