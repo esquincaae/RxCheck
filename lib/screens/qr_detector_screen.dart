@@ -9,11 +9,11 @@ class QRDetectorScreen extends StatefulWidget {
 }
 
 class _QRDetectorScreenState extends State<QRDetectorScreen> {
-  final MobileScannerController cameraController = MobileScannerController();
+  late MobileScannerController cameraController;
   String? qrCode;
   Recipe? recipe;
-
-  bool _isScanning = false; // Controla si la cámara está encendida
+  int _scannerKey = 0;
+  bool _isScanning = false;
 
   void _errorQRCodeDialog() {
     showDialog(
@@ -26,13 +26,19 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              cameraController.start(); // Reanuda para otro escaneo
+              _restartScanner();
             },
-            child: Text('Cerrar', style: TextStyle(color: Colors.blue),),
+            child: Text('Cerrar', style: TextStyle(color: Colors.blue)),
           ),
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    cameraController = MobileScannerController();
   }
 
   @override
@@ -41,15 +47,24 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
     super.dispose();
   }
 
+  void _restartScanner() {
+    setState(() {
+      cameraController.dispose(); // libera la instancia conflictiva
+      cameraController = MobileScannerController(); // crea nueva instancia limpia
+      _isScanning = true;
+      qrCode = null;
+    });
+  }
+
   void _toggleScanning() {
     if (_isScanning) {
       cameraController.stop();
+      setState(() {
+        _isScanning = false;
+      });
     } else {
-      cameraController.start();
+      _restartScanner();
     }
-    setState(() {
-      _isScanning = !_isScanning;
-    });
   }
 
   @override
@@ -90,6 +105,7 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
                       borderRadius: BorderRadius.circular(20),
                       child: _isScanning
                           ? MobileScanner(
+                        key: ValueKey(_scannerKey),
                         controller: cameraController,
                         onDetect: (capture) {
                           final barcodes = capture.barcodes;
