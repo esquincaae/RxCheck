@@ -68,68 +68,57 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-/// Controla si mostrar login, reautenticación o home según sesión y biometría
+/// Controla si mostrar reautenticación o la vista de seleccion
 class AuthWrapper extends StatefulWidget {
   @override
   State<AuthWrapper> createState() => _AuthWrapperState();
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  final LocalAuthentication _localAuth = LocalAuthentication();
+  final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
-  Future<void> _handleAuth() async {
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => SelectModeLoginScreen()),
-      );
-    } else {
-      bool didAuthenticate = false;
-      try {
-        didAuthenticate = await _localAuth.authenticate(
-          localizedReason: 'Autentícate para continuar',
-          options: const AuthenticationOptions(
-            biometricOnly: false,
-            stickyAuth: true,
-          ),
-        );
-      } catch (e) {
-        print('Error en autenticación local: $e');
-      }
-
-      if (didAuthenticate) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => HomeScreen()),
-        );
-      } else {
-        final email = user.email ?? '';
-        //await FirebaseAuth.instance.signOut();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => ReauthScreen(userEmail: email)),
-        );
-      }
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _handleAuth();
-    });
+  Future<bool> _hasSecureStorageData() async {
+    final data = await _secureStorage.readAll();
+    print('🔒 secureStorage values: $data');
+    return data.isNotEmpty;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: CircularProgressIndicator()),
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+
+        return FutureBuilder<bool>(
+          future: _hasSecureStorageData(),
+          builder: (context, storageSnapshot) {
+            if (storageSnapshot.connectionState == ConnectionState.waiting) {
+              return Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+
+            final user = snapshot.data;
+            final emailToSend = user?.email ?? '';
+            print('📩 Enviando a ReauthScreen con email: $emailToSend');
+            print('👤 Firebase currentUser: ${user?.email}');
+
+            if (user != null && (storageSnapshot.data ?? false)) {
+
+              // Usuario activo + secureStorage con datos -> Ir a Reauth
+              return ReauthScreen(userEmail: emailToSend);
+            } else {
+              // Usuario nulo o secureStorage vacío -> Ir a SelectModeLogin
+              return SelectModeLoginScreen();
+            }
+          },
+        );
+      },
     );
   }
 }
+
 
 // Escucha si el usuario toca la pantalla y reinicia el temporizador de sesión
 class SessionTimeoutHandler extends StatefulWidget {

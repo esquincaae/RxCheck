@@ -50,17 +50,9 @@ class _SelectModeLoginScreenState extends State<SelectModeLoginScreen> {
   }
 
   void navigateWithSlideTransition(BuildContext context, Widget page) async {
-    // Ocultar logo para animación de fade
-    setState(() {
-      _showLogo = false;
-    });
-
-    // Pequeña pausa para que el AnimatedSwitcher haga fade
-    await Future.delayed(const Duration(milliseconds: 300));
 
     await Navigator.of(context).push(
       PageRouteBuilder(
-        transitionDuration: const Duration(milliseconds: 500),
         pageBuilder: (_, animation, __) => page,
         transitionsBuilder: (_, animation, __, child) {
           const begin = Offset(1.0, 0.0);
@@ -74,11 +66,6 @@ class _SelectModeLoginScreenState extends State<SelectModeLoginScreen> {
         },
       ),
     );
-
-    // Al volver, mostrar el logo de nuevo con fade
-    setState(() {
-      _showLogo = true;
-    });
   }
 
   @override
@@ -92,22 +79,13 @@ class _SelectModeLoginScreenState extends State<SelectModeLoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: _showLogo
-                      ? SvgPicture.asset(
-                    'assets/images/Logo_LogRec.svg',
-                    key: const ValueKey('logo_svg'),
-                    height: 150,
-                    placeholderBuilder: (context) =>
-                    const CircularProgressIndicator(),
-                  )
-                      : SizedBox(
-                    key: const ValueKey('empty_logo'),
-                    height: 150,
-                    width: 150,
+                SvgPicture.asset(
+                  'assets/images/Logo_LogRec.svg',
+                  key: const ValueKey('logo_svg'),
+                  height: 150,
+                  placeholderBuilder: (context) =>
+                  const CircularProgressIndicator(),
                   ),
-                ),
                 const SizedBox(height: 10),
                 const Text(
                   'RxCheck',

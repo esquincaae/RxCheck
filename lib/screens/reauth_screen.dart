@@ -153,15 +153,6 @@ class _ReauthScreenState extends State<ReauthScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
         CustomInputField(
           label: 'Email',
           controller: emailController,

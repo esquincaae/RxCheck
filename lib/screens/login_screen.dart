@@ -11,7 +11,6 @@ import 'package:product_list_app/widgets/styles.dart';
 
 import 'home_screen.dart';
 import 'recover_password_screen.dart';
-import 'reauth_screen.dart';
 
 //Refactorizado :)
 final secureStorage = FlutterSecureStorage();
@@ -31,20 +30,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    checkReturningUser();
-  }
-
-  Future<void> checkReturningUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString('userEmail');
-    if (email != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ReauthScreen(userEmail: email),
-        ),
-      );
-    }
   }
 
   Future<void> loginWithCredentials() async {
