@@ -15,6 +15,7 @@ class CustomInputField extends StatelessWidget {
   final IconData? icon;
   final bool isDisabled;
   final bool readOnly;
+  final filled = false;
 
   const CustomInputField({
     super.key,
@@ -48,7 +49,7 @@ class CustomInputField extends StatelessWidget {
           labelText: label,
           floatingLabelStyle: const TextStyle(color: Colors.blue),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: isDisabled ? Colors.grey.shade200 : Colors.white,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20.0),
