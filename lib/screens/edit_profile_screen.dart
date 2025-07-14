@@ -1,18 +1,19 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../widgets/custom_input_field.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/styles.dart';
 import 'select_mode_login_screen.dart';
+import '../services/user_service.dart';
+
+final secureStorage = FlutterSecureStorage();
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -23,19 +24,21 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _auth = FirebaseAuth.instance;
-  final _storage = FirebaseStorage.instance;
-  final _firestore = FirebaseFirestore.instance;
-  final _secureStorage = const FlutterSecureStorage();
+  final _userService = UserService();
   final picker = ImagePicker();
 
+  final curpController = TextEditingController();
+  final primerApellidoController = TextEditingController();
+  final segundoApellidoController = TextEditingController();
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
+  final direccionController = TextEditingController();
 
   bool _loading = false;
   String? _photoUrl;
   File? _imageFile;
+  String? userRole;
 
   @override
   void initState() {
@@ -45,31 +48,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _loadUserData() async {
     setState(() => _loading = true);
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        final doc = await _firestore.collection('users').doc(user.uid).get();
-        if (doc.exists) {
-          final data = doc.data()!;
-          nameController.text = data['name'] ?? '';
-          emailController.text = data['email'] ?? '';
-          phoneController.text = data['phone'] ?? '';
-          _photoUrl = data['photoUrl'] ?? '';
-        }
-      }
-    } catch (e) {
-      debugPrint('Error loading user data: $e');
-    } finally {
-      setState(() => _loading = false);
+    final data = await _userService.getUserData();
+    if (data != null) {
+      setState(() {
+        nameController.text = data['nombre'] ?? '';
+        primerApellidoController.text = data['apellidoPaterno'] ?? '';
+        segundoApellidoController.text = data['apellidoMaterno'] ?? '';
+        curpController.text = data['curp'] ?? '';
+        emailController.text = data['email'] ?? '';
+        phoneController.text = data['telefono'] ?? '';
+        direccionController.text = data['direccion'] ?? '';
+        _photoUrl = data['photoUrl'] ?? '';
+        userRole = data['role'] ?? '';
+      });
     }
-  }
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    emailController.dispose();
-    phoneController.dispose();
-    super.dispose();
+    setState(() => _loading = false);
   }
 
   Future<void> _pickImage() async {
@@ -85,37 +78,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
 
-    try {
-      final user = _auth.currentUser;
-      if (user == null) return;
+    String? uploadedPhotoUrl;
+    if (_imageFile != null) {
+      uploadedPhotoUrl = await _userService.uploadUserImage(_imageFile!);
+    }
 
-      String? imageUrl;
-      if (_imageFile != null) {
-        final ref = _storage.ref().child('profile_pictures/${user.uid}.jpg');
-        await ref.putFile(_imageFile!);
-        imageUrl = await ref.getDownloadURL();
-      }
+    final success = await _userService.updateUserProfile(
+      email: emailController.text.trim(),
+      direction: direccionController.text.trim(),
+      phone: phoneController.text.trim(),
+      photoUrl: uploadedPhotoUrl,
+    );
 
-      await _firestore.collection('users').doc(user.uid).update({
-        'name': nameController.text.trim(),
-        'email': emailController.text.trim(),
-        'phone': phoneController.text.trim(),
-        if (imageUrl != null) 'photoUrl': imageUrl,
-      });
+    setState(() => _loading = false);
 
+    if (success) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Perfil actualizado correctamente')),
       );
-
       _loadUserData();
-    } catch (e) {
-      debugPrint('Error updating profile: $e');
+    } else {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error al actualizar el perfil')),
       );
-    } finally {
-      setState(() => _loading = false);
     }
+  }
+
+  Future<void> _logout() async {
+    await _userService.logout();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => SelectModeLoginScreen()),
+          (route) => false,
+    );
   }
 
   @override
@@ -137,7 +134,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         padding: EdgeInsets.all(20.r),
         child: Column(
           children: [
-            // Imagen y botón arriba, fijo
             SizedBox(
               width: 160.w,
               height: 160.w,
@@ -159,8 +155,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               label: Text('Cambiar foto', style: AppTextStyles.linkText),
             ),
             SizedBox(height: 20.h),
-
-            // El formulario ocupa el espacio restante scrollable
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
@@ -169,18 +163,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Form(
                     key: _formKey,
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
                       children: [
-
                         CustomInputField(
                           label: 'Nombre',
                           controller: nameController,
                           icon: MdiIcons.account,
+                          isDisabled: true,
                           validator: (value) =>
                           value == null || value.isEmpty ? 'Ingresa tu nombre' : null,
-                          isDisabled: true,
                         ),
-
+                        if (userRole != 'farmacia') ...[
+                          CustomInputField(
+                            label: 'Primer Apellido',
+                            controller: primerApellidoController,
+                            icon: MdiIcons.account,
+                            isDisabled: true,
+                            validator: (value) =>
+                            value == null || value.isEmpty ? 'Ingresa tu Primer Apellido' : null,
+                          ),
+                          CustomInputField(
+                            label: 'Segundo Apellido',
+                            controller: segundoApellidoController,
+                            icon: MdiIcons.account,
+                            isDisabled: true,
+                            validator: (value) =>
+                            value == null || value.isEmpty ? 'Ingresa tu Segundo Apellido' : null,
+                          ),
+                        ],
+                        CustomInputField(
+                          label: userRole == 'farmacia' ? 'RFC' : 'CURP',
+                          controller: curpController,
+                          icon: MdiIcons.account,
+                          isDisabled: true,
+                          validator: (value) =>
+                          value == null || value.isEmpty ? 'Ingresa tu CURP' : null,
+                        ),
                         CustomInputField(
                           label: 'Correo electrónico',
                           controller: emailController,
@@ -189,7 +206,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           validator: (value) =>
                           value == null || value.isEmpty ? 'Ingresa tu correo' : null,
                         ),
-                        
                         CustomInputField(
                           label: 'Teléfono',
                           controller: phoneController,
@@ -198,84 +214,53 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           validator: (value) =>
                           value == null || value.isEmpty ? 'Ingresa tu teléfono' : null,
                         ),
-                        SizedBox(height: 20.h),
+                        if (userRole == 'farmacia') ...[
+                          CustomInputField(
+                            label: 'Dirección',
+                            controller: direccionController,
+                            icon: MdiIcons.directions,
+                            isDisabled: true,
+                            validator: (value) =>
+                            value == null || value.isEmpty ? 'Ingresa tu CURP' : null,
+                          ),
+                          SizedBox(height: 20.h),
+                        ],
                       ],
                     ),
                   ),
                 ),
               ),
             ),
-
-
             _loading
                 ? const CircularProgressIndicator()
-                : Column(
-              mainAxisSize: MainAxisSize.min,
+                : Row(
               children: [
-                Row(
-                  children: [
-                    /*Expanded(
-                      child: CustomButton(
-                        icon: Icon(MdiIcons.delete),
-                        text: 'Eliminar cuenta',
-                        backgroundColor: AppColors.error,
-                        onPressed: _deleteAccount,
-                        padding: EdgeInsets.symmetric(vertical: 16.h),
-                      ),
-                    ),*/
-                    SizedBox(width: 10.w),
-                    Expanded(
-                      child: CustomButton(
-                        icon: Icon(MdiIcons.logout, color: Colors.white),
-                        text: 'Cerrar sesión',
-                        backgroundColor: Colors.orange,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 16.h),
-                        borderRadius: 15.r,
-                        onPressed: () async {
-                          try {
-                            await FirebaseAuth.instance.signOut();
-                            await _secureStorage.deleteAll();
-                            if (!mounted) return;
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(builder: (_) => SelectModeLoginScreen()),
-                                  (route) => false,
-                            );
-                          } catch (e) {
-                            debugPrint("Error al cerrar sesión: $e");
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Ocurrió un error al cerrar sesión.")),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                    SizedBox(width: 10.w,),
-                    Expanded(child:  CustomButton(
-                        icon: Icon(MdiIcons.update),
-                        text: 'Actualizar',
-                        onPressed: _updateProfile,
-                        padding: EdgeInsets.symmetric(vertical: 16.h),
-                      ),
-                    )
-
-
-                  ],
+                Expanded(
+                  child: CustomButton(
+                    icon: Icon(MdiIcons.logout, color: Colors.white),
+                    text: 'Cerrar sesión',
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                    onPressed: _logout,
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    borderRadius: 15.r,
+                  ),
                 ),
-                SizedBox(height: 10.h),
-                Align(
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    width: 200.w, // ancho fijo para que no sea tan ancho, ajusta como quieras
-
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: CustomButton(
+                    icon: Icon(MdiIcons.update),
+                    text: 'Actualizar',
+                    onPressed: _updateProfile,
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
                   ),
                 ),
               ],
             ),
-
           ],
         ),
       ),
     );
   }
 }
+

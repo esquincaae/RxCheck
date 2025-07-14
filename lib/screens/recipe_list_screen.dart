@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../data/recipe.dart'; // Importa tu fetchRecipes()
 import '../models/recipe.dart';
 import '../widgets/recipe_card.dart';
 
@@ -17,29 +16,20 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
   @override
   void initState() {
     super.initState();
-    fetchProducts();
+    loadRecipes();
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> loadRecipes() async {
     try {
-      final response = await http.get(Uri.parse('https://fakestoreapi.com/products'));
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        setState(() {
-          recipes = data.map((e) => Recipe.fromJson(e)).toList();
-          isLoading = false;
-          errorMessage = null;
-        });
-      } else {
-        setState(() {
-          errorMessage = 'Error en la respuesta: ${response.statusCode}';
-          isLoading = false;
-        });
-      }
+      final fetchedRecipes = await fetchRecipes();
+      setState(() {
+        recipes = fetchedRecipes;
+        isLoading = false;
+        errorMessage = null;
+      });
     } catch (e) {
       setState(() {
-        errorMessage = 'Error al obtener productos: $e';
+        errorMessage = e.toString();
         isLoading = false;
       });
     }
@@ -47,6 +37,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     if (isLoading) {
       return Center(child: CircularProgressIndicator());
     }
@@ -62,6 +53,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
     return ListView.builder(
       itemCount: recipes.length,
       itemBuilder: (context, index) {
+
         return RecipeCard(recipe: recipes[index]);
       },
     );

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'login_screen.dart';
-import 'package:product_list_app/widgets/custom_button.dart';
-import 'home_screen.dart';
+import '../widgets/custom_button.dart';
 import 'register_patient_screen.dart';
 import 'register_medical_center_screen.dart';
 
@@ -19,38 +17,7 @@ class _SelectModeLoginScreenState extends State<SelectModeLoginScreen> {
   String error = '';
   bool isLoading = false;
 
-  // Nuevo estado para controlar el logo
-  bool _showLogo = true;
-
-  Future<void> loginWithCredentials() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() {
-      isLoading = true;
-      error = '';
-    });
-
-    try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passController.text.trim(),
-      );
-
-      if (credential.user != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => HomeScreen()),
-        );
-      }
-    } on FirebaseAuthException catch (e) {
-      setState(() => error = e.message ?? 'Error de autenticación');
-    } finally {
-      setState(() => isLoading = false);
-    }
-  }
-
   void navigateWithSlideTransition(BuildContext context, Widget page) async {
-
     await Navigator.of(context).push(
       PageRouteBuilder(
         pageBuilder: (_, animation, __) => page,

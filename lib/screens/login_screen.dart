@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:product_list_app/screens/qr_detector_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:product_list_app/widgets/custom_input_field.dart';
-import 'package:product_list_app/widgets/custom_button.dart';
-import 'package:product_list_app/widgets/styles.dart';
-
+import '../widgets/custom_input_field.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/styles.dart';
+import '../services/auth_service.dart';
 import 'home_screen.dart';
 import 'recover_password_screen.dart';
 
-//Refactorizado :)
 final secureStorage = FlutterSecureStorage();
 
 class LoginScreen extends StatefulWidget {
@@ -32,38 +32,69 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
-  Future<void> loginWithCredentials() async {
-    if (!_formKey.currentState!.validate()) return;
+  void showDenegadePermision(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // evita cerrar al tocar fuera
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Acceso denegado'),
+          content: const Text('Tu cuenta no tiene los permisos para usar esta app.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // cerrar el diálogo
+              },
+              child: const Text('Cerrar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
+  Future<void> loginWithCredentials() async {
+    final authService = AuthService();
+    if (!_formKey.currentState!.validate()) return;
     setState(() {
       isLoading = true;
       error = '';
     });
-
+    print('LOGIN - Correo electrónico: ${emailController.text}');
+    print('LOGIN - Contraseña: ${passController.text}');
     try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passController.text.trim(),
+      await authService.signIn(
+        emailController.text.trim(),
+        passController.text.trim(),
       );
 
-      if (credential.user != null) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userEmail', emailController.text.trim());
-
-        await secureStorage.write(
-            key: 'userPassword', value: passController.text.trim());
-
+      final SharedPreferences localPrefs = await SharedPreferences.getInstance();
+      final role = localPrefs.getString('role');
+      if (role == 'paciente'){
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => HomeScreen()),
         );
+      }else if(role == 'farmacia'){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => QRDetectorScreen()),
+        );
+      }else{
+        showDenegadePermision(context);
       }
-    } on FirebaseAuthException catch (e) {
-      setState(() => error = e.message ?? 'Error de autenticación');
+
+    } catch (e) {
+      setState(() {
+        error = e.toString().replaceFirst('Exception: ', '');
+      });
     } finally {
-      setState(() => isLoading = false);
+      setState(() {
+        isLoading = false;
+      });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 25.w, vertical: 10.h),
                         ),
-                        SizedBox(height: 20.h),
+                        /*SizedBox(height: 20.h),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -165,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   style: AppTextStyles.linkText),
                             ),
                           ],
-                        ),
+                        ),*/
                         if (error.isNotEmpty)
                           Padding(
                             padding: EdgeInsets.only(top: 10.h),

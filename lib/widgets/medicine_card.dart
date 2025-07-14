@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'custom_card.dart';
-import '../models/medicine.dart';
+import '../models/medication.dart';
 
 class MedicineCard extends StatelessWidget {
-  final Medicine medicine;
+  final Medication medicine;
 
   const MedicineCard({super.key, required this.medicine});
 
@@ -28,7 +28,7 @@ class MedicineCard extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      medicine.name,
+                      medicine.text,
                       style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,

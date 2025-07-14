@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:product_list_app/screens/login_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:product_list_app/widgets/custom_input_field.dart';
+import '../services/auth_service.dart';
 
 class RegisterMedicalCenterScreen extends StatefulWidget {
   @override
@@ -13,6 +13,7 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
   final _formKey = GlobalKey<FormState>();
   final PageController _pageController = PageController();
 
+  final TextEditingController rfcController = TextEditingController();
   final TextEditingController nombreFarmaciaController = TextEditingController();
   final TextEditingController telefonoController = TextEditingController();
   final TextEditingController direccionController = TextEditingController();
@@ -25,6 +26,7 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
 
   @override
   void dispose() {
+    rfcController.dispose();
     nombreFarmaciaController.dispose();
     telefonoController.dispose();
     direccionController.dispose();
@@ -43,26 +45,27 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
       });
 
       try {
-        final pharmacyCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-          email: emailController.text.trim(),
-          password: passController.text.trim(),
+        bool result = await AuthService().signUp(
+          rfcController.text.trim(), // al no tener curp, se mete el RFC
+          nombreFarmaciaController.text.trim(),
+          'farmacia', // rol
+          emailController.text.trim(),
+          passController.text.trim(),
+          telefonoController.text.trim(),
+          direccionController.text.trim(),
+          '',
+          '',
         );
 
-        final user = pharmacyCredential.user;
-        if (user != null) {
+        if (result) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => LoginScreen()),
           );
         }
-      } on FirebaseAuthException catch (e) {
-        setState(() {
-          error = e.message ?? 'Error al registrar';
-        });
       } catch (e) {
         setState(() {
-          error = 'Error inesperado: $e';
+          error = e.toString();
         });
       } finally {
         setState(() {
@@ -71,6 +74,8 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
       }
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {

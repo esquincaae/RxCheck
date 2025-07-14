@@ -1,17 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:screen_protector/screen_protector.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:local_auth/local_auth.dart';
-
+import 'services/auth_service.dart';
 import 'screens/reauth_screen.dart';
-import 'screens/home_screen.dart';
-import 'screens/login_screen.dart';
 import 'screens/select_mode_login_screen.dart';
-import 'screens/edit_profile_screen.dart';
 import 'screens/qr_detector_screen.dart';
 
 // Permite navegar desde fuera del árbol de widgets
@@ -19,14 +15,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: "AIzaSyBAGkqMTLM8WgYH-NdNHM8Ijm0B45fPbCg",
-      appId: "1:70532459459:android:6ee84cc4ae5a8894316b76",
-      messagingSenderId: "70532459459",
-      projectId: "usuariosfakestoreapi",
-    ),
-  );
+
   runApp(
       ScreenUtilInit(
           designSize: Size(390, 844),
@@ -77,47 +66,50 @@ class AuthWrapper extends StatefulWidget {
 class _AuthWrapperState extends State<AuthWrapper> {
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
-  Future<bool> _hasSecureStorageData() async {
-    final data = await _secureStorage.readAll();
-    print('🔒 secureStorage values: $data');
-    return data.isNotEmpty;
+// Devuelve un Map con info de usuario, o null si no hay
+  Future<Map<String, String>> _getUserData() async {
+    final userData = await _secureStorage.readAll();
+
+    print('MAIN - SecureStorage: $userData');
+
+    return userData;
+
   }
+
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: _getUserData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(body: Center(child: CircularProgressIndicator()));
+          return Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
 
-        return FutureBuilder<bool>(
-          future: _hasSecureStorageData(),
-          builder: (context, storageSnapshot) {
-            if (storageSnapshot.connectionState == ConnectionState.waiting) {
-              return Scaffold(body: Center(child: CircularProgressIndicator()));
-            }
+        if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(child: Text('Error: ${snapshot.error}')),
+          );
+        }
 
-            final user = snapshot.data;
-            final emailToSend = user?.email ?? '';
-            print('📩 Enviando a ReauthScreen con email: $emailToSend');
-            print('👤 Firebase currentUser: ${user?.email}');
+        final user = snapshot.data!;
+        final userEmail = user['userEmail'] ?? '';
+        final isLoggedIn = user.isNotEmpty
+            || (userEmail != null && userEmail.isNotEmpty);
 
-            if (user != null && (storageSnapshot.data ?? false)) {
+        if (isLoggedIn) {
 
-              // Usuario activo + secureStorage con datos -> Ir a Reauth
-              return ReauthScreen(userEmail: emailToSend);
-            } else {
-              // Usuario nulo o secureStorage vacío -> Ir a SelectModeLogin
-              return SelectModeLoginScreen();
-            }
-          },
-        );
+          return ReauthScreen(userEmail: userEmail,);
+        } else {
+          return SelectModeLoginScreen();
+        }
       },
     );
   }
 }
+
 
 
 // Escucha si el usuario toca la pantalla y reinicia el temporizador de sesión
@@ -140,7 +132,6 @@ class _SessionTimeoutHandlerState extends State<SessionTimeoutHandler> with Widg
   }
 
   void _handleSessionTimeout() async {
-    await FirebaseAuth.instance.signOut();
     await _storage.deleteAll();
     if (navigatorKey.currentState != null) {
       navigatorKey.currentState!.pushAndRemoveUntil(

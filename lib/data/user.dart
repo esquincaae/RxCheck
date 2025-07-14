@@ -1,24 +1,23 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/medicine.dart';
+import '../models/user.dart';
 
-Future<List<Medicine>> fetchProducts() async {
+Future<List<User>> fetchProducts() async {
   final response = await http.get(Uri.parse('https://fakestoreapi.com/products'));
 
   if (response.statusCode == 200) {
     List<dynamic> data = json.decode(response.body);
-    List<Medicine> recipes = [];
+    List<User> users = [];
 
     for (var item in data) {
-      recipes.add(Medicine.fromJson(item));
+      users.add(User.fromJson(item));
     }
 
-    // Imprimir los títulos de los productos en consola
-    for (var p in recipes) {
-      print('Medicamento: ${p.name} ');
+    for (var user in users) {
+      print('Usuario: ${user.nombre} - Correo: ${user.email} - Rol: ${user.role}');
     }
 
-    return recipes;
+    return users;
   } else {
     throw Exception('Error al obtener productos');
   }

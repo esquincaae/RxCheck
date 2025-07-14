@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:product_list_app/screens/login_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:product_list_app/widgets/custom_input_field.dart';
+import '../services/auth_service.dart';
 
-//Refactorizado :))
+
 class RegisterPatientScreenPage extends StatefulWidget {
   @override
   State<RegisterPatientScreenPage> createState() => _RegistroPacientePageState();
@@ -18,9 +18,11 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
   final TextEditingController nombresController = TextEditingController();
   final TextEditingController primerApellidoController = TextEditingController();
   final TextEditingController segundoApellidoController = TextEditingController();
+  final TextEditingController telefonoController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passController = TextEditingController();
   final TextEditingController confirmPassController = TextEditingController();
+  final TextEditingController direccionController = TextEditingController();
 
   bool isLoading = false;
   String error = "";
@@ -31,9 +33,11 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
     primerApellidoController.dispose();
     segundoApellidoController.dispose();
     curpController.dispose();
+    telefonoController.dispose();
     emailController.dispose();
     passController.dispose();
     confirmPassController.dispose();
+    direccionController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -46,26 +50,27 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
       });
 
       try {
-        final userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-          email: emailController.text.trim(),
-          password: passController.text.trim(),
+        bool result = await AuthService().signUp(
+          curpController.text.trim(),
+          nombresController.text.trim(),
+          'paciente', // rol
+          emailController.text.trim(),
+          passController.text.trim(),
+          telefonoController.text.trim(),
+          '',
+          primerApellidoController.text.trim(),
+          segundoApellidoController.text.trim(),
         );
 
-        final user = userCredential.user;
-        if (user != null) {
+        if (result) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => LoginScreen()),
           );
         }
-      } on FirebaseAuthException catch (e) {
-        setState(() {
-          error = e.message ?? 'Error al registrar';
-        });
       } catch (e) {
         setState(() {
-          error = 'Error inesperado: $e';
+          error = e.toString();
         });
       } finally {
         setState(() {
@@ -267,6 +272,21 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     }
                                     if (!value.contains('@')) {
                                       return 'Ingresa un correo válido';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                CustomInputField(
+                                  controller: telefonoController,
+                                  label: "Telefono",
+                                  icon: Icons.phone_android_outlined,
+                                  keyboardType: TextInputType.number,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor ingresa tu Numero de Telefono';
+                                    }
+                                    if (value.length != 10) {
+                                      return 'Ingresa un Numero de Telefono válido';
                                     }
                                     return null;
                                   },

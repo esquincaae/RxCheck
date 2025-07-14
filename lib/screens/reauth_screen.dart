@@ -2,28 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:product_list_app/services/auth_service.dart';
-
 import 'home_screen.dart';
+import 'qr_detector_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'recover_password_screen.dart';
 import 'package:product_list_app/widgets/styles.dart';
 import 'package:product_list_app/widgets/custom_button.dart';
 import 'package:product_list_app/widgets/custom_input_field.dart';
 
-//Refactorizado :)
-
 
 class ReauthScreen extends StatefulWidget {
   final String userEmail;
 
-  const ReauthScreen({super.key, required this.userEmail});
+  const ReauthScreen({super.key,required this.userEmail});
 
   @override
   State<ReauthScreen> createState() => _ReauthScreenState();
 }
 
 class _ReauthScreenState extends State<ReauthScreen> {
+  SharedPreferences? prefs;
+  String valorRecuperado = '';
   final LocalAuthentication auth = LocalAuthentication();
   final TextEditingController _passwordController = TextEditingController();
   late PageController _pageController;
@@ -34,6 +34,13 @@ class _ReauthScreenState extends State<ReauthScreen> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
+    _loadPrefs('buscar');
+  }
+
+  Future<String> _loadPrefs(String buscar) async {
+    prefs = await SharedPreferences.getInstance();
+    final valorRecuperado = prefs?.getString(buscar) ?? '';
+    return valorRecuperado;
   }
 
   @override
@@ -43,7 +50,24 @@ class _ReauthScreenState extends State<ReauthScreen> {
     super.dispose();
   }
 
-  Future<void> _authenticate() async {
+  Future<void> _navigateByRole() async {
+    String role = await _loadPrefs('role');
+    if (!mounted) return;
+
+    if (role == 'paciente') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => HomeScreen()),
+      );
+    } else if (role == 'farmacia') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => QRDetectorScreen()),
+      );
+    }
+  }
+
+  Future<void> _validateFingerprint() async {
     setState(() {
       _isAuthenticating = true;
       error = '';
@@ -56,14 +80,9 @@ class _ReauthScreenState extends State<ReauthScreen> {
       );
 
       if (authenticated) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => HomeScreen()),
-        );
+        await _navigateByRole();
       } else {
-
         setState(() => error = 'No fue posible autenticarse');
-
       }
     } catch (e) {
       setState(() => error = 'Error en autenticación: $e');
@@ -74,35 +93,32 @@ class _ReauthScreenState extends State<ReauthScreen> {
     }
   }
 
-  void _validatePassword() async {
+
+  Future<void> _validatePassword() async {
     String enteredPassword = _passwordController.text.trim();
 
     setState(() {
-      String? error = '';// limpia errores previos
+      error = ''; // limpia errores previos correctamente
     });
 
     try {
-      // Usa AuthService para reautenticación real
-      await AuthService().reauthenticate(widget.userEmail, enteredPassword);
+      await AuthService().signIn(widget.userEmail, enteredPassword);
 
-      // Si no lanza error, autenticación exitosa
       if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => HomeScreen()),
-      );
+      await _navigateByRole();
     } catch (e) {
       setState(() {
-        error = '';
+        error = 'Contraseña incorrecta o error: $e';
       });
     }
   }
 
 
-  @override
+
+@override
   Widget build(BuildContext context) {
     final emailController = TextEditingController(text: widget.userEmail);
-
+    print('REAUTH - ${widget.userEmail}');
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Center(
@@ -186,7 +202,7 @@ class _ReauthScreenState extends State<ReauthScreen> {
                 child: CustomButton(
                   icon: const Icon(Icons.fingerprint_outlined),
                   text: 'Huella',
-                  onPressed: _authenticate,
+                  onPressed: _validateFingerprint,
                   backgroundColor: AppColors.success,
                   foregroundColor: AppColors.white,
                   borderRadius: 15.r,
@@ -206,7 +222,7 @@ class _ReauthScreenState extends State<ReauthScreen> {
               textAlign: TextAlign.center,
             ),
           ),
-        SizedBox(height: 25.h),
+        /*SizedBox(height: 25.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -227,7 +243,7 @@ class _ReauthScreenState extends State<ReauthScreen> {
               ),
             ),
           ],
-        ),
+        ),*/
       ],
     );
   }
@@ -273,7 +289,7 @@ class _ReauthScreenState extends State<ReauthScreen> {
               textAlign: TextAlign.center,
             ),
           ),
-        SizedBox(height: 30.h),
+        /*SizedBox(height: 30.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -294,7 +310,7 @@ class _ReauthScreenState extends State<ReauthScreen> {
               ),
             ),
           ],
-        ),
+        ),*/
       ],
     );
   }

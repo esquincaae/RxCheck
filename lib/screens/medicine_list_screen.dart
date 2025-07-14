@@ -1,67 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../models/medicine.dart';
+import '../models/medication.dart';
 import '../widgets/medicine_card.dart';
+import '../models/recipe.dart';
+import '../data/medication.dart';
 
 class MedicineListScreen extends StatefulWidget {
+  final Recipe recipe;
+  const MedicineListScreen({super.key, required this.recipe});
+
   @override
   _MedicineListScreenState createState() => _MedicineListScreenState();
 }
 
 class _MedicineListScreenState extends State<MedicineListScreen> {
-  List<Medicine> medicines = [];
+  Medication medication = Medication(text: '');
+  List<Medication> medicines = [];
   bool isLoading = true;
   String? errorMessage;
+
 
   @override
   void initState() {
     super.initState();
-    fetchMedicines();
+    fetchMedicines(widget.recipe.id);
+    loadMedicines();
   }
 
-  Future<void> fetchMedicines() async {
+  Future<void> loadMedicines() async {
     try {
-      final response = await http.get(Uri.parse('https://fakestoreapi.com/products'));
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        setState(() {
-          medicines = data.map((e) => Medicine.fromJson(e)).toList();
-          isLoading = false;
-          errorMessage = null;
-        });
-      } else {
-        setState(() {
-          errorMessage = 'Error en la respuesta: ${response.statusCode}';
-          isLoading = false;
-        });
-      }
-    } catch (e) {
+      final fetchedMedicines = await fetchMedicines(widget.recipe.id);
       setState(() {
-        errorMessage = 'Error al obtener medicinas: $e';
+        medicines = fetchedMedicines;
+        isLoading = false;
+        errorMessage = null;
+      });
+    }catch (e) {
+      setState(() {
+        errorMessage = e.toString();
         isLoading = false;
       });
-    }
+      }
   }
+
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Center(child: CircularProgressIndicator());
-    }
-
-    if (errorMessage != null) {
-      return Center(child: Text(errorMessage!));
-    }
-
-    if (medicines.isEmpty) {
-      return Center(child: Text('No hay medicamentos disponibles'));
-    }
+    if (isLoading) { return Center(child: CircularProgressIndicator()); }
+    if (errorMessage != null) { return Center(child: Text(errorMessage!)); }
+    if (medicines.isEmpty) { return Center(child: Text('No hay medicamentos disponibles')); }
 
     return ListView.builder(
       itemCount: medicines.length,
       itemBuilder: (context, index) {
+        print('Medicine ${index + 1}: ${medicines[index].text}');
         return MedicineCard(medicine: medicines[index]);
       },
     );

@@ -1,25 +1,43 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import '../models/recipe.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-Future<List<Recipe>> fetchProducts() async {
-  final response = await http.get(Uri.parse('https://fakestoreapi.com/products'));
+final storage = FlutterSecureStorage();
+final Dio dio = Dio();
+final String baseUrl = 'https://api.rxcheck.icu';
 
-  if (response.statusCode == 200) {
-    List<dynamic> data = json.decode(response.body);
-    List<Recipe> recipes = [];
+Future<List<Recipe>> fetchRecipes() async {
+  final token = await storage.read(key: 'authToken');
+  print('RECIPEDATA - Token: $token');
 
-    for (var item in data) {
-      recipes.add(Recipe.fromJson(item));
+  try {
+    final response = await dio.get(
+      '$baseUrl/recipe',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final decoded = response.data; // Dio ya devuelve Map<String, dynamic>
+      final data = decoded['data'] as List<dynamic>;
+
+      List<Recipe> recipes = data.map((e) => Recipe.fromJson(e)).toList();
+
+      // Imprimir recetas en consola
+      for (var r in recipes) {
+        print('Receta ID: ${r.id}, Fecha: ${r.issue_at}');
+      }
+
+      return recipes;
+    } else {
+      throw Exception('Error en la respuesta: ${response.statusCode}');
     }
-
-    // Imprimir los títulos de los productos en consola
-    for (var p in recipes) {
-      print('Receta: ${p.title} - \$${p.price}');
-    }
-
-    return recipes;
-  } else {
-    throw Exception('Error al obtener productos');
+  } catch (e) {
+    print('Error al obtener recetas: $e');
+    throw Exception('Error al obtener recetas');
   }
 }

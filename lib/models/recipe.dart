@@ -1,25 +1,21 @@
 class Recipe {
   late final int id;
-  final String title;
-  final String description;
-  final double price;
-  final String image;
+  final String issue_at;
 
   Recipe({
     required this.id,
-    required this.title,
-    required this.description,
-    required this.price,
-    required this.image,
+    required this.issue_at,
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
     return Recipe(
       id: json['id'],
-      title: json['title'] ?? 'Sin título',
-      description: json['description'] ?? '',
-      price: (json['price'] as num).toDouble(),
-      image: json['image'] ?? '',
+      issue_at: json['issue_at'] ?? 'Sin título',
     );
+  }
+
+  @override
+  String toString() {
+    return 'Recipe(id: $id, issue_at: $issue_at)';
   }
 }

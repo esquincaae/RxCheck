@@ -1,12 +1,38 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'Medicine_list_screen.dart';
+import 'package:product_list_app/models/medication.dart';
+import 'medicine_list_screen.dart';
 import '../models/recipe.dart';
+import '../data/medication.dart';
 
-class RecipeDetailScreen extends StatelessWidget {
+class RecipeDetailScreen extends StatefulWidget {
   final Recipe recipe;
   const RecipeDetailScreen({super.key, required this.recipe});
+
+  @override
+  _RecipeDetailScreenState createState() => _RecipeDetailScreenState();
+}
+
+class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
+  String? qrImageUrl;
+  bool isLoadingQr = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadQrImage();
+    qrImageUrl;
+  }
+
+  Future<void> loadQrImage() async {
+    String url = await fetchQrImage(widget.recipe.id);
+    print('RECIPEDETAIL - $qrImageUrl');
+
+    setState(() {
+      qrImageUrl = url;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +100,7 @@ class RecipeDetailScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 10),
                                   Expanded(
-                                    child: MedicineListScreen(),
+                                    child: MedicineListScreen(recipe: widget.recipe),
                                   ),
                                 ],
                               ),
@@ -101,12 +127,20 @@ class RecipeDetailScreen extends StatelessWidget {
                       widthFactor: 0.7,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          recipe.image,
+                        child: qrImageUrl == null
+                            ? SizedBox(
+                          height: screenHeight * 0.25,
+                          child: const Center(child: CircularProgressIndicator()),
+                        )
+                            : Image.network(
+                          qrImageUrl!,
                           height: screenHeight * 0.25,
                           fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.broken_image, size: 100),
                         ),
                       ),
+
                     ),
                   ),
                 ],
@@ -116,14 +150,5 @@ class RecipeDetailScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future<Recipe> fetchMedicineDetail(int id) async {
-    final response = await http.get(Uri.parse('https://fakestoreapi.com/products/$id'));
-    if (response.statusCode == 200) {
-      return Recipe.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Error al obtener detalles de la receta');
-    }
   }
 }

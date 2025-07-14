@@ -34,7 +34,7 @@ class RecipeCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    recipe.title,
+                    recipe.issue_at,
                     style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -45,7 +45,7 @@ class RecipeCard extends StatelessWidget {
                   'assets/icons/recipe.svg',
                   width: 25,
                   height: 25,
-                  color: Colors.blue,
+                    colorFilter: ColorFilter.mode(Colors.blue, BlendMode.srcIn)
                 ),
               ],
             ),
