@@ -67,41 +67,45 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              SliverFillRemaining(
+              SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: Card(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      side: BorderSide(color: Colors.blue.shade100),
-                    ),
-                    elevation: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12, right: 12, top: 10.0, bottom: 10),
-                          child: Text(
-                            'Historial de Recetas',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.86,
+                    child: Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        side: BorderSide(color: Colors.blue.shade100),
+                      ),
+                      elevation: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12, right: 12, top: 10.0, bottom: 10),
+                            child: Text(
+                              'Historial de Recetas',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                        ),
-                        Flexible(
-                          fit: FlexFit.loose,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                            child: RecipeListScreen(),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                              child: RecipeListScreen(),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
+
+
             ],
           );
         },

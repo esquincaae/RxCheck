@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../data/recipe.dart'; // Importa tu fetchRecipes()
+import '../data/recipe.dart';
 import '../models/recipe.dart';
 import '../widgets/recipe_card.dart';
 
@@ -20,6 +20,10 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
   }
 
   Future<void> loadRecipes() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
     try {
       final fetchedRecipes = await fetchRecipes();
       setState(() {
@@ -35,11 +39,16 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
     }
   }
 
+  Future<void> _handleRefresh() async {
+    await loadRecipes();
+  }
+
   @override
   Widget build(BuildContext context) {
-
     if (isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+      ));
     }
 
     if (errorMessage != null) {
@@ -50,12 +59,17 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
       return Center(child: Text('No hay recetas disponibles'));
     }
 
-    return ListView.builder(
-      itemCount: recipes.length,
-      itemBuilder: (context, index) {
-
-        return RecipeCard(recipe: recipes[index]);
-      },
+    return RefreshIndicator(
+      color: Colors.blue,
+      backgroundColor: Colors.white,
+      onRefresh: _handleRefresh,
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: recipes.length,
+        itemBuilder: (context, index) {
+          return RecipeCard(recipe: recipes[index]);
+        },
+      ),
     );
   }
 }
