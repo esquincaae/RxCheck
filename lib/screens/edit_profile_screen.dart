@@ -23,6 +23,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+
   final _formKey = GlobalKey<FormState>();
   final _userService = UserService();
   final picker = ImagePicker();
@@ -155,8 +156,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
+    final usesNavbarButtons = bottomPadding > 0; // Generalmente indica navbar visible
+
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
@@ -172,9 +177,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         padding: EdgeInsets.all(20.r),
         child: Column(
           children: [
-
-
-
+            
             SizedBox(
               width: 160.w,
               height: 160.w,
@@ -205,9 +208,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
             ),
-
-
-
+            
             SizedBox(height: 10.h),
             TextButton.icon(
               onPressed: _loading ? null : _pickAndUpdateImage,
@@ -216,84 +217,123 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             SizedBox(height: 20.h),
             Expanded(
-              child: SingleChildScrollView(
-                child: Container(
-                  decoration: AppDecorations.card,
-                  padding: EdgeInsets.all(16.r),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        CustomInputField(
-                          label: 'Nombre',
-                          controller: nameController,
-                          icon: MdiIcons.account,
-                          isDisabled: true,
-                          validator: (value) =>
-                          value == null || value.isEmpty ? 'Ingresa tu nombre' : null,
-                        ),
-                        if (userRole != 'farmacia') ...[
-                          CustomInputField(
-                            label: 'Primer Apellido',
-                            controller: primerApellidoController,
-                            icon: MdiIcons.account,
-                            isDisabled: true,
-                            validator: (value) =>
-                            value == null || value.isEmpty ? 'Ingresa tu Primer Apellido' : null,
+              child: Container(
+                decoration: AppDecorations.card,
+                padding: EdgeInsets.all(16.r),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              CustomInputField(
+                                label: 'Nombre',
+                                controller: nameController,
+                                icon: MdiIcons.account,
+                                isDisabled: true,
+                                validator: (value) => value == null || value.isEmpty
+                                    ? 'Ingresa tu nombre'
+                                    : null,
+                              ),
+                              if (userRole != 'farmacia') ...[
+                                CustomInputField(
+                                  label: 'Primer Apellido',
+                                  controller: primerApellidoController,
+                                  icon: MdiIcons.account,
+                                  isDisabled: true,
+                                  validator: (value) => value == null || value.isEmpty
+                                      ? 'Ingresa tu Primer Apellido'
+                                      : null,
+                                ),
+                                CustomInputField(
+                                  label: 'Segundo Apellido',
+                                  controller: segundoApellidoController,
+                                  icon: MdiIcons.account,
+                                  isDisabled: true,
+                                  validator: (value) => value == null || value.isEmpty
+                                      ? 'Ingresa tu Segundo Apellido'
+                                      : null,
+                                ),
+                              ],
+                              CustomInputField(
+                                label: userRole == 'farmacia' ? 'RFC' : 'CURP',
+                                controller: curpController,
+                                icon: MdiIcons.account,
+                                isDisabled: true,
+                                validator: (value) => value == null || value.isEmpty
+                                    ? 'Ingresa tu CURP'
+                                    : null,
+                              ),
+                              CustomInputField(
+                                label: 'Correo electrónico',
+                                controller: emailController,
+                                icon: MdiIcons.email,
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (value) => value == null || value.isEmpty
+                                    ? 'Ingresa tu correo'
+                                    : null,
+                              ),
+                              CustomInputField(
+                                label: 'Teléfono',
+                                controller: phoneController,
+                                icon: MdiIcons.phone,
+                                keyboardType: TextInputType.phone,
+                                validator: (value) => value == null || value.isEmpty
+                                    ? 'Ingresa tu teléfono'
+                                    : null,
+                              ),
+                              if (userRole == 'farmacia') ...[
+                                CustomInputField(
+                                  label: 'Dirección',
+                                  controller: direccionController,
+                                  icon: MdiIcons.directions,
+                                  isDisabled: true,
+                                  validator: (value) => value == null || value.isEmpty
+                                      ? 'Ingresa tu dirección'
+                                      : null,
+                                ),
+                                SizedBox(height: 20.h),
+                              ],
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: CustomButton(
+                                      icon: Icon(MdiIcons.accountRemove, color: Colors.white),
+                                      text: 'Eliminar Cuenta',
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                      onPressed: _logout,
+                                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                                      borderRadius: 15.r,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  Expanded(
+                                    child: CustomButton(
+                                      icon: SvgPicture.asset(
+                                        'assets/icons/verify.svg', color: Colors.white,
+                                      ),
+                                      text: 'Activar 2FA',
+                                      backgroundColor: Colors.green,
+                                      onPressed: _updateProfile,
+                                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          CustomInputField(
-                            label: 'Segundo Apellido',
-                            controller: segundoApellidoController,
-                            icon: MdiIcons.account,
-                            isDisabled: true,
-                            validator: (value) =>
-                            value == null || value.isEmpty ? 'Ingresa tu Segundo Apellido' : null,
-                          ),
-                        ],
-                        CustomInputField(
-                          label: userRole == 'farmacia' ? 'RFC' : 'CURP',
-                          controller: curpController,
-                          icon: MdiIcons.account,
-                          isDisabled: true,
-                          validator: (value) =>
-                          value == null || value.isEmpty ? 'Ingresa tu CURP' : null,
                         ),
-                        CustomInputField(
-                          label: 'Correo electrónico',
-                          controller: emailController,
-                          icon: MdiIcons.email,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) =>
-                          value == null || value.isEmpty ? 'Ingresa tu correo' : null,
-                        ),
-                        CustomInputField(
-                          label: 'Teléfono',
-                          controller: phoneController,
-                          icon: MdiIcons.phone,
-                          keyboardType: TextInputType.phone,
-                          validator: (value) =>
-                          value == null || value.isEmpty ? 'Ingresa tu teléfono' : null,
-                        ),
-                        if (userRole == 'farmacia') ...[
-                          CustomInputField(
-                            label: 'Dirección',
-                            controller: direccionController,
-                            icon: MdiIcons.directions,
-                            isDisabled: true,
-                            validator: (value) =>
-                            value == null || value.isEmpty ? 'Ingresa tu CURP' : null,
-                          ),
-                          SizedBox(height: 20.h),
-                        ],
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
-            _loading
-                ? const CircularProgressIndicator()
-                : Row(
+            SizedBox(height: usesNavbarButtons ? 40.h : 20.h),
+            Row(
               children: [
                 Expanded(
                   child: CustomButton(
@@ -302,7 +342,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     backgroundColor: Colors.orange,
                     foregroundColor: Colors.white,
                     onPressed: _logout,
-                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
                     borderRadius: 15.r,
                   ),
                 ),
@@ -312,7 +352,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     icon: Icon(MdiIcons.update),
                     text: 'Actualizar',
                     onPressed: _updateProfile,
-                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
                   ),
                 ),
               ],

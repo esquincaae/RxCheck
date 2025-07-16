@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return SessionTimeoutHandler(
-      child: MaterialApp(                                       //Material APP
+      child: MaterialApp(
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'Recetas Medicas',

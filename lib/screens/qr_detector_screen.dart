@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/recipe.dart';
 import 'edit_profile_screen.dart';
 import 'recipe_detail_screen.dart';
-
+import '../services/qr_service.dart';
 
 class QRDetectorScreen extends StatefulWidget {
   @override
@@ -85,15 +85,20 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
       ),
     );
   }
+  void _navigateToRecipeDetailOrError() {
+    if (qrCode == null || qrCode!.isEmpty) {
+      _errorQRCodeDialog();
+    }/*else{
+      final Recipe recipe = qrDetector(qrCode);
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => RecipeDetailScreen(),
+        ),
+      );
+    }*/
 
-  void _navigateToRecipeDetail(Recipe recipe) {
-    Navigator.pop(context);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => RecipeDetailScreen(recipe: recipe),
-      ),
-    );
   }
 
   @override
@@ -164,9 +169,8 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
                                   setState(() => qrCode = code);
                                   cameraController.stop();
                                   setState(() => _isScanning = false);
-                                  // TODO: Validar QR en la base de datos y navegar o mostrar error
+                                  _navigateToRecipeDetailOrError();
 
-                                  _errorQRCodeDialog();
                                 }
                               }
                             },

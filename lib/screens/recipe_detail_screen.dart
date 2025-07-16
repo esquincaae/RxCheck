@@ -57,7 +57,6 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             return SingleChildScrollView(
               child: Column(
                 children: [
-                  // SliverAppBar simulada
                   Container(
                     height: 60,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
