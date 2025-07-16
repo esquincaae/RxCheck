@@ -61,7 +61,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
 
     return RefreshIndicator(
       color: Colors.blue,
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFF1F4F8),
       onRefresh: _handleRefresh,
       child: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(),

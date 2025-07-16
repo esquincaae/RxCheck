@@ -5,9 +5,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../models/user.dart';
 import 'auth_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final _baseUrl = dotenv.env['API_URL'];
 
 class UserService {
-  final _baseUrl = 'https://api.rxcheck.icu';
   final _secureStorage = const FlutterSecureStorage();
   final _prefs = SharedPreferences.getInstance();
 

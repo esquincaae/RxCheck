@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -160,8 +159,7 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
                             onDetect: (capture) {
                               final barcodes = capture.barcodes;
                               if (barcodes.isNotEmpty) {
-                                final code =
-                                    barcodes.first.rawValue ?? '---';
+                                final code = barcodes.first.rawValue ?? '---';
                                 if (qrCode != code) {
                                   setState(() => qrCode = code);
                                   cameraController.stop();

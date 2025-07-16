@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import '../models/recipe.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final baseUrl = dotenv.env['API_URL'];
 
 final storage = FlutterSecureStorage();
 final Dio dio = Dio();
-final String baseUrl = 'https://api.rxcheck.icu';
 
 Future<List<Recipe>> fetchRecipes() async {
   final token = await storage.read(key: 'authToken');

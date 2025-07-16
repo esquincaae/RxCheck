@@ -1,20 +1,22 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:screen_protector/screen_protector.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:local_auth/local_auth.dart';
-import 'services/auth_service.dart';
 import 'screens/reauth_screen.dart';
 import 'screens/select_mode_login_screen.dart';
-import 'screens/qr_detector_screen.dart';
+
 
 // Permite navegar desde fuera del árbol de widgets
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final file = File('.env');
+  print('¿Existe .env? ${await file.exists()}');
+  await dotenv.load(fileName: ".env");
 
   runApp(
       ScreenUtilInit(

@@ -3,9 +3,13 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final _apiUrl = dotenv.env['API_URL'];
+final _baseUrl = '$_apiUrl/user';
+
 class AuthService {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
-  final String _baseUrl = 'https://api.rxcheck.icu/user';
 
   late SharedPreferences _prefs;
 

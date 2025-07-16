@@ -2,15 +2,15 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/medication.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-String apiUrl = 'https://api.rxcheck.icu';
+final apiUrl = dotenv.env['API_URL'];
+
 final storage = FlutterSecureStorage();
 final token = storage.read(key: 'authToken');
 
 Future<List<Medication>> fetchMedicines(int recipeId) async {
   final token = await storage.read(key: 'authToken');
-  print('MEDICINES - Recipe ID: $recipeId');
-  print('$token');
   final response = await http.get(
     Uri.parse('$apiUrl/recipe/$recipeId'),
     headers: {
@@ -28,11 +28,6 @@ Future<List<Medication>> fetchMedicines(int recipeId) async {
         .map((item) => Medication.fromJson(item))
         .toList();
 
-    // Imprimir textos de medicamentos en consola
-    for (var m in medications) {
-      print('Medicamento: ${m.text}');
-    }
-
     return medications;
   } else {
     throw Exception('Error al obtener medicamentos: ${response.statusCode}');
@@ -41,7 +36,6 @@ Future<List<Medication>> fetchMedicines(int recipeId) async {
 
 Future<String> fetchQrImage(int recipeId) async {
   final token = await storage.read(key: 'authToken');
-  print('QR FETCH - Recipe ID: $recipeId');
   final response = await http.get(
     Uri.parse('$apiUrl/recipe/$recipeId'),
     headers: {
@@ -55,7 +49,6 @@ Future<String> fetchQrImage(int recipeId) async {
     final data = decoded['data'] as Map<String, dynamic>;
 
     final qrImage = data['qr_image'];
-    print('QR: $qrImage');
     return qrImage ?? '';
   } else {
     throw Exception('Error al obtener QR: ${response.statusCode}');

@@ -45,6 +45,7 @@ dependencies:
   material_design_icons_flutter: ^7.0.7296 #iconos
   dio: ^5.4.3
   cached_network_image: ^3.3.1
+  flutter_dotenv: ^5.0.2
 
 
 
@@ -82,6 +83,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - .env
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
