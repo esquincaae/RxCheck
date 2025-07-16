@@ -92,13 +92,13 @@ class AuthService {
         'email': email,
         'password': password,
         'role': role,
-        'direccion': direccion,
+        'domicilio': direccion,
         });
 
       print('Body enviado: $body');
 
       final response = await http.post(
-        Uri.parse('$_baseUrl/auth/users'),
+        Uri.parse('$_baseUrl/users/'),
         headers: {'Content-Type': 'application/json'},
         body: body,
       );
@@ -106,11 +106,11 @@ class AuthService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        final token = data['token'];
-        final userId = data['userId'];
+        final token = data['authToken'];
+        final id = data['id'];
 
         await _prefs.setString('userEmail', email);
-        await _prefs.setString('userId', userId);
+        await _prefs.setString('userId', id);
 
         await _secureStorage.write(key: 'authToken', value: token);
         await _secureStorage.write(key: 'userPassword', value: password);
@@ -119,13 +119,14 @@ class AuthService {
         await _secureStorage.write(key: 'userLastName1', value: primerApellido);
         await _secureStorage.write(key: 'userLastName2', value: segundoApellido);
         await _secureStorage.write(key: 'userEmail', value: email);
-        await _secureStorage.write(key: 'userId', value: userId);
+        await _secureStorage.write(key: 'userId', value: id);
         await _secureStorage.write(key: 'userRole', value: role);
 
         return true;
       } else {
         final data = jsonDecode(response.body);
-        throw Exception(data['message'] ?? 'Error al registrar usuario');
+        print('$data');
+        throw Exception(data['error'] ?? 'Error al registrar usuario');
       }
     } catch (e) {
       rethrow; // Permite manejar el error en la UI
@@ -156,7 +157,25 @@ class AuthService {
   }
 
 
+  Future<bool> sendPasswordReset(String email) async {
+    print('Correo electrónico: $email');
+    try{
+      final response = await http.post(
+        Uri.parse('$_baseUrl/auth/reset-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
 
+      if (response.statusCode == 200) {
+          return true;
+      } else {
+        throw Exception('Error al enviar el correo de recuperación');
+      }
+
+    }catch(e){
+      rethrow;
+    }
+  }
 
 
 

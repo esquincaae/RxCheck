@@ -36,70 +36,68 @@ class UserService {
 
   }
 
-  Future<String?> uploadUserImage(File imageFile) async {
+  Future<String?> updateUserImage(File imageFile) async {
     try {
-      final curp = await _secureStorage.read(key: 'curp');
+      final prefs = await SharedPreferences.getInstance();
+      final curp = prefs.getString('curp');
       final token = await _secureStorage.read(key: 'authToken');
+      print('$curp - $token');
 
       if (curp == null || token == null) {
         return null;
       }
 
-      final request = http.MultipartRequest(
-        'POST',
-        Uri.parse('$_baseUrl/user/users/$curp'),
-      );
+      var uri = Uri.parse('$_baseUrl/user/users/$curp');
+      var request = http.MultipartRequest('PUT', uri);
       request.headers['Authorization'] = 'Bearer $token';
-      request.files.add(await http.MultipartFile.fromPath('photo', imageFile.path));
 
-      final response = await request.send();
-      if (response.statusCode == 200) {
-        final respStr = await response.stream.bytesToString();
-        final data = jsonDecode(respStr);
-        return data['photoUrl'];
-      } else {
-        return null;
-      }
-    } catch (_) {
+      request.files.add(await http.MultipartFile.fromPath('imagen', imageFile.path));
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+      var imageUrl = jsonDecode(responseBody)['imagen'];
+      print('Response: $imageUrl');
+      return imageUrl;
+    } catch (e) {
+      print('Error al actualizar el perfil: $e');
       return null;
     }
   }
 
-  Future<bool> updateUserProfile({
-    required String email,
-    required String phone,
-    required String direction,
-    String? photoUrl,
-  }) async {
+  Future<bool> updateUserProfile({required String email, required String phone,//<--------------------------------UpdateProfile
+    required String direction}) async {
     try {
-      final curp = await _secureStorage.read(key: 'curp');
+      final prefs = await SharedPreferences.getInstance();
+      final curp = prefs.getString('curp');
       final token = await _secureStorage.read(key: 'authToken');
+      print('$curp - $token');
 
       if (curp == null || token == null) {
         return false;
       }
 
-      final body = {
-        'email': email,
+      var uri = Uri.parse('$_baseUrl/user/users/$curp');
+      var request = http.MultipartRequest('PUT', uri);
+      request.headers['Authorization'] = 'Bearer $token';
 
-        'phone': phone,
-        if (photoUrl != null) 'photoUrl': photoUrl,
-      };
+      request.fields['email'] = email;
+      request.fields['telefono'] = phone;
+      request.fields['domicilio'] = direction;
 
-      final response = await http.put(
-        Uri.parse('$_baseUrl/user/users/$curp'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(body),
-      );
 
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+
+      print('Response: $responseBody');
+
+      print('USERSERVICE - Response status code - ${response.statusCode}');
       return response.statusCode == 200;
-    } catch (_) {
+    } catch (e) {
+      print('Error al actualizar el perfil: $e');
       return false;
     }
   }
+
 
   Future<void> logout() async {
     await _secureStorage.deleteAll();

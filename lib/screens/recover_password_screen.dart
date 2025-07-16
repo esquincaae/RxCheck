@@ -1,6 +1,6 @@
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:product_list_app/widgets/custom_input_field.dart';
+import '../widgets/custom_input_field.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
 
@@ -17,7 +17,7 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
   String message = '';
 
   Future<void> sendPasswordReset() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate())
 
     setState(() {
       isLoading = true;
@@ -27,11 +27,10 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
     try {
       await AuthService().sendPasswordReset(
         emailController.text.trim(),
-        curpController.text.trim(),
       );
 
       setState(() {
-        message = 'Correo de recuperación enviado. Revisa tu bandeja de entrada.';
+        message = 'Si el email existe en nuestro sistema, recibirás un código de recuperación';
       });
     } catch (e) {
       setState(() {
@@ -106,27 +105,12 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                               return null;
                             },
                           ),
-                          CustomInputField(
-                            controller: curpController,
-                            label: "ingresa tu CURP",
-                            icon: Icons.person_outlined,
-                            keyboardType: TextInputType.text,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Por favor ingresa tu CURP';
-                              }
-                              if (value.length != 18) {
-                                return 'La CURP debe tener 18 Caracteres';
-                              }
-                              return null;
-                            },
-                          ),
                           SizedBox(height: 20),
                           isLoading
                               ? CircularProgressIndicator()
                               : ElevatedButton(
                             onPressed: sendPasswordReset,
-                            child: Text('Enviar correo de recuperación'),
+                            child: Text('Recuperar'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
@@ -172,4 +156,3 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
     );
   }
 }
-*/

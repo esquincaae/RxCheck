@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:product_list_app/models/medication.dart';
+import '../models/medication.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'medicine_list_screen.dart';
 import '../models/recipe.dart';
 import '../data/medication.dart';
+
 
 class RecipeDetailScreen extends StatefulWidget {
   final Recipe recipe;
@@ -17,20 +19,28 @@ class RecipeDetailScreen extends StatefulWidget {
 class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
   String? qrImageUrl;
   bool isLoadingQr = true;
+  String? role = '';
+
 
   @override
   void initState() {
     super.initState();
     loadQrImage();
     qrImageUrl;
+    role;
   }
 
   Future<void> loadQrImage() async {
+
     String url = await fetchQrImage(widget.recipe.id);
     print('RECIPEDETAIL - $qrImageUrl');
+    final SharedPreferences localPrefs = await SharedPreferences.getInstance();
+    final userRole = localPrefs.getString('role');
 
     setState(() {
       qrImageUrl = url;
+      role = userRole!;
+
     });
   }
 
@@ -120,29 +130,31 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                       color: Colors.black,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: FractionallySizedBox(
-                      widthFactor: 0.7,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: qrImageUrl == null
-                            ? SizedBox(
-                          height: screenHeight * 0.25,
-                          child: const Center(child: CircularProgressIndicator()),
-                        )
-                            : Image.network(
-                          qrImageUrl!,
-                          height: screenHeight * 0.25,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.broken_image, size: 100),
+                  if (role != 'farmacia') ...[
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: FractionallySizedBox(
+                        widthFactor: 0.7,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: qrImageUrl == null
+                              ? SizedBox(
+                            height: screenHeight * 0.25,
+                            child: const Center(child: CircularProgressIndicator()),
+                          )
+                              : Image.network(
+                            qrImageUrl!,
+                            height: screenHeight * 0.25,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.broken_image, size: 100),
+                          ),
                         ),
                       ),
-
                     ),
-                  ),
+                  ],
+
                 ],
               ),
             );

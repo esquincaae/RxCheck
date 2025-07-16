@@ -1,4 +1,4 @@
-package com.example.product_list_app
+package com.CodeCraft.RxCheck
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine

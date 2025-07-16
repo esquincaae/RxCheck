@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:product_list_app/screens/qr_detector_screen.dart';
+import '../screens/qr_detector_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -178,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 25.w, vertical: 10.h),
                         ),
-                        /*SizedBox(height: 20.h),
+                        SizedBox(height: 20.h),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -196,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   style: AppTextStyles.linkText),
                             ),
                           ],
-                        ),*/
+                        ),
                         if (error.isNotEmpty)
                           Padding(
                             padding: EdgeInsets.only(top: 10.h),

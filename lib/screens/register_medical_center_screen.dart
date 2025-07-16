@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:product_list_app/screens/login_screen.dart';
+import '../screens/login_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:product_list_app/widgets/custom_input_field.dart';
+import '../widgets/custom_input_field.dart';
 import '../services/auth_service.dart';
 
 class RegisterMedicalCenterScreen extends StatefulWidget {
@@ -53,8 +53,8 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
           passController.text.trim(),
           telefonoController.text.trim(),
           direccionController.text.trim(),
-          '',
-          '',
+          ' ',
+          ' ',
         );
 
         if (result) {
@@ -128,6 +128,17 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
                                       Navigator.pop(context);
                                     },
                                   ),
+                                ),
+                                CustomInputField(
+                                  controller: rfcController,
+                                  label: "RFC",
+                                  icon: Icons.perm_identity_outlined,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor el RFC de la farmacia';
+                                    }
+                                    return null;
+                                  },
                                 ),
                                 CustomInputField(
                                   controller: nombreFarmaciaController,

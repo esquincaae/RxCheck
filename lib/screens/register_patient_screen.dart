@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:product_list_app/screens/login_screen.dart';
+import '../screens/login_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:product_list_app/widgets/custom_input_field.dart';
+import '../widgets/custom_input_field.dart';
 import '../services/auth_service.dart';
-
 
 class RegisterPatientScreenPage extends StatefulWidget {
   @override
@@ -57,7 +56,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
           emailController.text.trim(),
           passController.text.trim(),
           telefonoController.text.trim(),
-          '',
+          ' ', // direccion',
           primerApellidoController.text.trim(),
           segundoApellidoController.text.trim(),
         );

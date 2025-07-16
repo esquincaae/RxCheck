@@ -1,4 +1,4 @@
-name: product_list_app
+name: RxCheck
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -44,6 +44,7 @@ dependencies:
   flutter_screenutil: ^5.9.0 #aplicacion responsiva
   material_design_icons_flutter: ^7.0.7296 #iconos
   dio: ^5.4.3
+  cached_network_image: ^3.3.1
 
 
 

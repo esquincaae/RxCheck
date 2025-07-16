@@ -4,8 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../widgets/custom_input_field.dart';
 import '../widgets/custom_button.dart';
@@ -36,7 +36,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final direccionController = TextEditingController();
 
   bool _loading = false;
-  String? _photoUrl;
+  String? _photoUrl = '';
   File? _imageFile;
   String? userRole;
 
@@ -44,50 +44,86 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     _loadUserData();
+    _photoUrl;
   }
 
   Future<void> _loadUserData() async {
+    if (!mounted) return;
     setState(() => _loading = true);
-    final data = await _userService.getUserData();
-    if (data != null) {
-      setState(() {
-        nameController.text = data['nombre'] ?? '';
-        primerApellidoController.text = data['apellidoPaterno'] ?? '';
-        segundoApellidoController.text = data['apellidoMaterno'] ?? '';
-        curpController.text = data['curp'] ?? '';
-        emailController.text = data['email'] ?? '';
-        phoneController.text = data['telefono'] ?? '';
-        direccionController.text = data['direccion'] ?? '';
-        _photoUrl = data['photoUrl'] ?? '';
-        userRole = data['role'] ?? '';
-      });
+    print('Cargando datos del usuario...');
+
+    try{
+      final data = await _userService.getUserData();
+      if (!mounted) return;
+      if (data != null) {
+        setState(() {
+          nameController.text = data['nombre'] ?? '';
+          primerApellidoController.text = data['apellidoPaterno'] ?? '';
+          segundoApellidoController.text = data['apellidoMaterno'] ?? '';
+          curpController.text = data['curp'] ?? '';
+          emailController.text = data['email'] ?? '';
+          phoneController.text = data['telefono'] ?? '';
+          direccionController.text = data['direccion'] ?? '';
+          _photoUrl = data['imagen'] ?? '';
+          userRole = data['role'] ?? '';
+        });
+        print('Datos del usuario cargados correctamente');
+      }else{print('Error al cargar datos del usuario');}
+    }catch(e){
+      print('Error al cargar datos del usuario: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al cargar datos del usuario')),);
+    }finally{
+      if (mounted) {
+        setState(() => _loading = false);
+        print('_loading set to false in finally block of _loadUserData');
+      }
     }
-    setState(() => _loading = false);
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickAndUpdateImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        _imageFile = File(pickedFile.path);
+        _loading = true; // Mostrar loader al subir la imagen
       });
+
+      final file = File(pickedFile.path);
+
+      final updatedPhotoUrl = await _userService.updateUserImage(file);
+
+      if (updatedPhotoUrl != null) {
+        setState(() {
+          _photoUrl = updatedPhotoUrl;
+          _imageFile = null; // Limpiar el archivo local tras subirlo
+          _loading = false;
+        });
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Imagen actualizada correctamente')),
+        );
+      } else {
+        setState(() {
+          _loading = false;
+        });
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al subir la imagen')),
+        );
+      }
     }
   }
+
 
   Future<void> _updateProfile() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
 
-    String? uploadedPhotoUrl;
-    if (_imageFile != null) {
-      uploadedPhotoUrl = await _userService.uploadUserImage(_imageFile!);
-    }
-
     final success = await _userService.updateUserProfile(
       email: emailController.text.trim(),
       direction: direccionController.text.trim(),
       phone: phoneController.text.trim(),
-      photoUrl: uploadedPhotoUrl,
     );
 
     setState(() => _loading = false);
@@ -105,6 +141,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
     }
   }
+
+
 
   Future<void> _logout() async {
     await _userService.logout();
@@ -134,23 +172,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         padding: EdgeInsets.all(20.r),
         child: Column(
           children: [
+
+
+
             SizedBox(
               width: 160.w,
               height: 160.w,
               child: ClipOval(
-                child: _imageFile != null
+                child: _imageFile != null // Prioridad 1: Si el usuario seleccionó una nueva imagen local
                     ? Image.file(_imageFile!, fit: BoxFit.cover)
-                    : (_photoUrl != null && _photoUrl!.isNotEmpty)
-                    ? Image.network(_photoUrl!, fit: BoxFit.cover)
-                    : SvgPicture.asset(
+                    : (_photoUrl != null && _photoUrl!.isNotEmpty) // Prioridad 2: Si hay una URL de foto de perfil
+                    ? CachedNetworkImage(
+                  imageUrl: _photoUrl!,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.0, // Indicador más pequeño
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) {
+                    print('Error loading image for URL: $url, Error: $error'); // Depuración
+                    return SvgPicture.asset( // Muestra el avatar por defecto si hay un error de carga
+                      'assets/images/Default_Avatar.svg',
+                      fit: BoxFit.cover,
+                    );
+                  },
+                )
+                    : SvgPicture.asset( // Prioridad 3: Si no hay imagen local ni URL de foto de perfil
                   'assets/images/Default_Avatar.svg',
                   fit: BoxFit.cover,
                 ),
               ),
             ),
+
+
+
             SizedBox(height: 10.h),
             TextButton.icon(
-              onPressed: _loading ? null : _pickImage,
+              onPressed: _loading ? null : _pickAndUpdateImage,
               icon: Icon(MdiIcons.camera, color: AppColors.primary),
               label: Text('Cambiar foto', style: AppTextStyles.linkText),
             ),

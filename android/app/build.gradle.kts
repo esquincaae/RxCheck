@@ -20,7 +20,7 @@ val keystoreProperties = Properties().apply {
 }
 
 android {
-    namespace = "com.example.product_list_app" // ¡Asegúrate de que este sea el namespace correcto de tu app!
+    namespace = "com.CodeCraft.RxCheck" // ¡Asegúrate de que este sea el namespace correcto de tu app!
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
@@ -34,7 +34,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.product_list_app" // ¡Asegúrate de que este sea el ID de aplicación correcto de tu app!
+        applicationId = "com.CodeCraft.RxCheck" // ¡Asegúrate de que este sea el ID de aplicación correcto de tu app!
         minSdk = 23
         targetSdk = 35
         versionCode = flutter.versionCode.toInt() // Asegúrate de convertir a Int

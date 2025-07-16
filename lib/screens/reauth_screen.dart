@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:product_list_app/services/auth_service.dart';
+import '../services/auth_service.dart';
+import '../widgets/styles.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/custom_input_field.dart';
 import 'home_screen.dart';
 import 'qr_detector_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'recover_password_screen.dart';
-import 'package:product_list_app/widgets/styles.dart';
-import 'package:product_list_app/widgets/custom_button.dart';
-import 'package:product_list_app/widgets/custom_input_field.dart';
 
 
 class ReauthScreen extends StatefulWidget {
@@ -222,7 +222,7 @@ class _ReauthScreenState extends State<ReauthScreen> {
               textAlign: TextAlign.center,
             ),
           ),
-        /*SizedBox(height: 25.h),
+        SizedBox(height: 25.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -243,7 +243,7 @@ class _ReauthScreenState extends State<ReauthScreen> {
               ),
             ),
           ],
-        ),*/
+        ),
       ],
     );
   }
@@ -289,7 +289,7 @@ class _ReauthScreenState extends State<ReauthScreen> {
               textAlign: TextAlign.center,
             ),
           ),
-        /*SizedBox(height: 30.h),
+        SizedBox(height: 30.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -310,7 +310,7 @@ class _ReauthScreenState extends State<ReauthScreen> {
               ),
             ),
           ],
-        ),*/
+        ),
       ],
     );
   }
