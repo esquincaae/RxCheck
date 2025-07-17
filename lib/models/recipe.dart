@@ -3,6 +3,7 @@ class Recipe {
   final String issue_at;
   late final String? qr;
 
+
   Recipe({
     required this.id,
     required this.issue_at,

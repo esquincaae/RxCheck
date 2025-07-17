@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/recipe.dart';
 import 'edit_profile_screen.dart';
 import 'recipe_detail_screen.dart';
-import '../services/qr_service.dart';
 
 class QRDetectorScreen extends StatefulWidget {
   @override

@@ -133,7 +133,7 @@ class AuthService {
         throw Exception(data['error'] ?? 'Error al registrar usuario');
       }
     } catch (e) {
-      rethrow; // Permite manejar el error en la UI
+      rethrow;
     }
   }
 

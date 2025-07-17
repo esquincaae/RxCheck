@@ -1,10 +1,11 @@
 class Medication {
+  final int id;
   final String text;
-
-  Medication({required this.text});
+  final bool supplied;
+  Medication({ required this.id, required this.text, required this.supplied});
 
   factory Medication.fromJson(Map<String, dynamic> json) {
-    return Medication(text: json['text']);
+    return Medication(id: json['id'], text: json['text'], supplied: json['supplied']);
   }
 }
 

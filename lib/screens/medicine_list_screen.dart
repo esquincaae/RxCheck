@@ -14,7 +14,7 @@ class MedicineListScreen extends StatefulWidget {
 }
 
 class _MedicineListScreenState extends State<MedicineListScreen> {
-  Medication medication = Medication(text: '');
+  Medication medication = Medication(id: 0, text: '', supplied: false);
   List<Medication> medicines = [];
   bool isLoading = true;
   String? errorMessage;
