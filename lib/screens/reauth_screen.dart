@@ -85,7 +85,7 @@ class _ReauthScreenState extends State<ReauthScreen> {
         setState(() => error = 'No fue posible autenticarse');
       }
     } catch (e) {
-      setState(() => error = 'Error en autenticación: $e');
+      setState(() => error = 'Error en autenticación');
     } finally {
       setState(() {
         _isAuthenticating = false;

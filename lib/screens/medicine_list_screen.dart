@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/medication.dart';
 import '../widgets/medicine_card.dart';
 import '../models/recipe.dart';
 import '../data/medication.dart';
 
+
 class MedicineListScreen extends StatefulWidget {
   final Recipe recipe;
   const MedicineListScreen({super.key, required this.recipe});
-
   @override
   _MedicineListScreenState createState() => _MedicineListScreenState();
 }
@@ -22,11 +23,34 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
   @override
   void initState() {
     super.initState();
-    fetchMedicines(widget.recipe.id);
-    loadMedicines();
+    loadRoleAndFetchMedicines();
   }
 
-  Future<void> loadMedicines() async {
+  Future<void> loadRoleAndFetchMedicines() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? role = prefs.getString('role');
+
+      if (role == 'paciente') {
+        await loadMedicinesWithId();
+      } else if (role == 'farmacia') {
+        await loadMedicinesWithQr();
+      } else {
+        setState(() {
+          errorMessage = 'Rol no identificado';
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Error al obtener rol';
+        isLoading = false;
+      });
+    }
+  }
+
+
+  Future<void> loadMedicinesWithId() async {
     try {
       final fetchedMedicines = await fetchMedicines(widget.recipe.id);
       setState(() {
@@ -42,6 +66,21 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
       }
   }
 
+  Future<void> loadMedicinesWithQr() async {
+    try {
+      final fetchedMedicines = await fetchMedicinesQrCode(widget.recipe.qr);
+      setState(() {
+        medicines = fetchedMedicines;
+        isLoading = false;
+        errorMessage = null;
+      });
+    }catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +91,6 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
     return ListView.builder(
       itemCount: medicines.length,
       itemBuilder: (context, index) {
-        print('Medicine ${index + 1}: ${medicines[index].text}');
         return MedicineCard(medicine: medicines[index]);
       },
     );

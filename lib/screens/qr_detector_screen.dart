@@ -85,21 +85,28 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
       ),
     );
   }
-  void _navigateToRecipeDetailOrError() {
+  void _navigateToRecipeDetailOrError(String? qrCode) {
+    _errorQRCodeDialog();
+
     if (qrCode == null || qrCode!.isEmpty) {
       _errorQRCodeDialog();
-    }/*else{
-      final Recipe recipe = qrDetector(qrCode);
+    }else{
+      recipe = Recipe(
+        id: 0,
+        issue_at: '',
+        qr: qrCode ?? '',
+      );
       Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => RecipeDetailScreen(),
+          builder: (_) => RecipeDetailScreen(recipe: recipe!),
         ),
       );
-    }*/
-
+    }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +176,7 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
                                   setState(() => qrCode = code);
                                   cameraController.stop();
                                   setState(() => _isScanning = false);
-                                  _navigateToRecipeDetailOrError();
+                                  _navigateToRecipeDetailOrError(qrCode);
 
                                 }
                               }

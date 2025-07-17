@@ -100,11 +100,6 @@ class UserService {
     }
   }
 
-
-  Future<void> logout() async {
-    await _secureStorage.deleteAll();
-  }
-
   Future<User> getUserByCurp(String curp) async {
     final response = await http.get(Uri.parse('$_baseUrl/user/users/$curp'),
         headers: {'Authorization': 'Bearer ${await AuthService().getToken()}'});

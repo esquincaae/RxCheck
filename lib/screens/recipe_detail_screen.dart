@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../models/medication.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'medicine_list_screen.dart';
 import '../models/recipe.dart';
 import '../data/medication.dart';
-
 
 class RecipeDetailScreen extends StatefulWidget {
   final Recipe recipe;
@@ -25,15 +21,25 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
   @override
   void initState() {
     super.initState();
+    loadRole();
     loadQrImage();
     qrImageUrl;
     role;
   }
 
+  Future<void> loadRole() async{
+    final prefs = await SharedPreferences.getInstance();
+    final userRole = prefs.getString('role') ?? '';
+
+    print('RECIPEDETAIL - $userRole');
+    setState(() {
+      role = userRole;
+    });
+  }
+
   Future<void> loadQrImage() async {
 
     String url = await fetchQrImage(widget.recipe.id);
-    print('RECIPEDETAIL - $qrImageUrl');
     final SharedPreferences localPrefs = await SharedPreferences.getInstance();
     final userRole = localPrefs.getString('role');
 
@@ -47,8 +53,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-
+    double cardHeightFactor = (role == 'farmacia') ? 0.86 : 0.45;
     return Scaffold(
       backgroundColor: const Color(0xFFF1F4F8),
       body: SafeArea(
@@ -88,7 +93,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                         widthFactor: 0.95,
                         child: ConstrainedBox(
                           constraints: BoxConstraints(
-                            maxHeight: screenHeight * 0.45, // 45% de la pantalla
+                            maxHeight: screenHeight * cardHeightFactor, // 45% de la pantalla
                             minHeight: 300,
                           ),
                           child: Card(
@@ -109,7 +114,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                                   ),
                                   const SizedBox(height: 10),
                                   Expanded(
-                                    child: MedicineListScreen(recipe: widget.recipe),
+                                    child: MedicineListScreen(recipe: widget.recipe)
                                   ),
                                 ],
                               ),
@@ -120,16 +125,16 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Muestra este QR en la Farmacia',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
                   if (role != 'farmacia') ...[
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Muestra este QR en la Farmacia',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Padding(
                       padding: const EdgeInsets.all(12.0),

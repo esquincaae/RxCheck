@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../screens/qr_detector_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../widgets/custom_input_field.dart';
@@ -13,7 +11,6 @@ import '../services/auth_service.dart';
 import 'home_screen.dart';
 import 'recover_password_screen.dart';
 
-final secureStorage = FlutterSecureStorage();
 
 class LoginScreen extends StatefulWidget {
   @override

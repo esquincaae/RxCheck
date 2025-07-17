@@ -12,6 +12,7 @@ import '../widgets/custom_button.dart';
 import '../widgets/styles.dart';
 import 'select_mode_login_screen.dart';
 import '../services/user_service.dart';
+import '../services/auth_service.dart';
 
 final secureStorage = FlutterSecureStorage();
 
@@ -25,6 +26,7 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
 
   final _formKey = GlobalKey<FormState>();
+  final _authService = AuthService();
   final _userService = UserService();
   final picker = ImagePicker();
 
@@ -146,7 +148,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
 
   Future<void> _logout() async {
-    await _userService.logout();
+    await _authService.signOut();
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => SelectModeLoginScreen()),

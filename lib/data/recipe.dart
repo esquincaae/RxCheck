@@ -24,7 +24,7 @@ Future<List<Recipe>> fetchRecipes() async {
     );
 
     if (response.statusCode == 200) {
-      final decoded = response.data; // Dio ya devuelve Map<String, dynamic>
+      final decoded = response.data;
       final data = decoded['data'] as List<dynamic>;
 
       List<Recipe> recipes = data.map((e) => Recipe.fromJson(e)).toList();
