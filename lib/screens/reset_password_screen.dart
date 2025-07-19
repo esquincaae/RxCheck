@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/custom_input_field.dart';
 import '../services/auth_service.dart';
-import 'login_screen.dart';
+import 'change_password.dart';
 
-class RecoverPasswordScreen extends StatefulWidget {
+class ResetPasswordScreen extends StatefulWidget {
   @override
-  _RecoverPasswordScreenState createState() => _RecoverPasswordScreenState();
+  _ResetPasswordScreenState createState() => _ResetPasswordScreenState();
 }
 
-class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final curpController = TextEditingController();
   bool isLoading = false;
   String message = '';
+  final _changePasswordScreen = ChangePasswordScreen();
 
   Future<void> sendPasswordReset() async {
     if (!_formKey.currentState!.validate())
@@ -30,7 +31,10 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
       );
 
       setState(() {
-        message = 'Si el email existe en nuestro sistema, recibirás un código de recuperación';
+        message = 'si el correo existe en nuestro sistema, recibirás un código de recuperación';
+        Navigator.push(context, MaterialPageRoute(
+            builder: (_) => _changePasswordScreen),
+        );
       });
     } catch (e) {
       setState(() {
@@ -62,7 +66,7 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Recuperar Contraseña',
+                  'Enviar Codigo',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 10),
@@ -99,7 +103,7 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                               if (value == null || value.isEmpty) {
                                 return 'Por favor ingresa tu correo';
                               }
-                              if (!value.contains('@')) {
+                              if (!value.contains('@') && !value.contains('.')) {
                                 return 'Ingresa un correo válido';
                               }
                               return null;
@@ -110,7 +114,7 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                               ? CircularProgressIndicator()
                               : ElevatedButton(
                             onPressed: sendPasswordReset,
-                            child: Text('Recuperar'),
+                            child: Text('enviar codigo'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
@@ -125,24 +129,12 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                             Text(
                               message,
                               style: TextStyle(
-                                color: message.contains('enviado') ? Colors.green : Colors.red,
+                                color: message.contains('existe') ? Colors.green : Colors.red,
                                 fontSize: 14,
                               ),
                               textAlign: TextAlign.center,
                             ),
                           SizedBox(height: 20),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (_) => LoginScreen()),
-                              );
-                            },
-                            child: Text(
-                              'Volver a iniciar sesión',
-                              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-                            ),
-                          ),
                         ],
                       ),
                     ),

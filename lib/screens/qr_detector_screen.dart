@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../models/recipe.dart';
 import 'edit_profile_screen.dart';
 import 'recipe_detail_screen.dart';
+
+final FlutterSecureStorage secure = FlutterSecureStorage();
 
 class QRDetectorScreen extends StatefulWidget {
   @override
@@ -84,8 +87,9 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
       ),
     );
   }
-  void _navigateToRecipeDetailOrError(String? qrCode) {
-    _errorQRCodeDialog();
+  Future<void> _navigateToRecipeDetailOrError(String? qrCode) async{
+
+    await secure.write(key: 'qrCode', value: qrCode);
 
     if (qrCode == null || qrCode!.isEmpty) {
       _errorQRCodeDialog();
@@ -95,7 +99,6 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
         issue_at: '',
         qr: qrCode ?? '',
       );
-      Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(

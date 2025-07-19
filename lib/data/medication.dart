@@ -44,17 +44,20 @@ Future<List<Medication>> fetchMedicinesQrCode(String? qrCode) async {
     },
   );
 
+  print(response.statusCode);
   if (response.statusCode == 200) {
     final decoded = json.decode(response.body);
     final data = decoded['data'] as Map<String, dynamic>;
+    print(data);
 
     final List<dynamic> medicationsJson = data['medications'] ?? [];
     List<Medication> medications = medicationsJson
-        .map((item) => Medication.fromJson(item))
-        .toList();
+        .map((item) => Medication.fromJson(item)).toList();
 
     return medications;
-  } else {
+  } else if (response.statusCode == 404) {
+    throw Exception('Esta Receta ya ha sido surtida por una Farmacia');
+  }else {
     throw Exception('Error al obtener medicamentos: ${response.statusCode}');
   }
 }

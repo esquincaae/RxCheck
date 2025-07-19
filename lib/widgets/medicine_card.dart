@@ -18,6 +18,7 @@ class _MedicineCardState extends State<MedicineCard> {
 
   @override
   void initState() {
+    isChecked = widget.medicine.supplied;
     super.initState();
     role;
   }
@@ -54,6 +55,7 @@ class _MedicineCardState extends State<MedicineCard> {
                     onChanged: (bool? newValue) {
                       setState(() {
                         isChecked = newValue ?? false;
+                        widget.medicine.supplied = isChecked;
                       });
                     },
                   ),

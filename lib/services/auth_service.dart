@@ -21,23 +21,6 @@ class AuthService {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  Future<bool> reauthenticate(String email, String password) async { //<--------------- REAUTENTICACION
-    final savedEmail = _prefs.getString('userEmail') ?? '';
-    print('Email guardado: $savedEmail');
-
-    try {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/reauthenticate'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
-      );
-
-      return response.statusCode == 200;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
   Future<Map<String, dynamic>> signIn(String email, String password) async {
     final response = await http.post(
       Uri.parse('$_baseUrl/auth/login'),
@@ -78,8 +61,9 @@ class AuthService {
 
       return userData;
     } else {
-      print('Error al iniciar sesión: ${response.body}');
-      throw Exception('Error de login: ${response.statusCode}');
+      final decoded = jsonDecode(response.body);
+      String message = decoded['message'] ?? '';
+      throw Exception('$message');
     }
   }
 
@@ -107,29 +91,10 @@ class AuthService {
         body: body,
       );
 
-
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = jsonDecode(response.body);
-        final token = data['authToken'];
-        final id = data['id'];
-
-        await _prefs.setString('userEmail', email);
-        await _prefs.setString('userId', id);
-
-        await _secureStorage.write(key: 'authToken', value: token);
-        await _secureStorage.write(key: 'userPassword', value: password);
-        await _secureStorage.write(key: 'userCurp', value: curp);
-        await _secureStorage.write(key: 'userName', value: nombre);
-        await _secureStorage.write(key: 'userLastName1', value: primerApellido);
-        await _secureStorage.write(key: 'userLastName2', value: segundoApellido);
-        await _secureStorage.write(key: 'userEmail', value: email);
-        await _secureStorage.write(key: 'userId', value: id);
-        await _secureStorage.write(key: 'userRole', value: role);
-
         return true;
       } else {
         final data = jsonDecode(response.body);
-        print('$data');
         throw Exception(data['error'] ?? 'Error al registrar usuario');
       }
     } catch (e) {
@@ -143,12 +108,12 @@ class AuthService {
     if (token != null) {
       await http.post(
         Uri.parse('$_baseUrl/logout'),
-        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
+        headers: {'Content-Type': 'application/json',
+                  'Authorization': 'Bearer $token'},
       );
     }
 
-    await _prefs.remove('userEmail');
-    await _prefs.remove('curp');
+    await _prefs.clear();
     await _secureStorage.deleteAll();
   }
 
@@ -162,15 +127,14 @@ class AuthService {
 
 
   Future<bool> sendPasswordReset(String email) async {
-    print('Correo electrónico: $email');
     try{
       final response = await http.post(
-        Uri.parse('$_baseUrl/auth/reset-password'),
+        Uri.parse('$_baseUrl/auth/request-password-reset'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email}),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
           return true;
       } else {
         throw Exception('Error al enviar el correo de recuperación');
@@ -181,6 +145,46 @@ class AuthService {
     }
   }
 
+  Future<bool> ConfirmPasswordReset(String email, String code, String newPassword) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/auth/confirm-password-reset'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'code': code,
+          'newPassword': newPassword}),
+      );
 
+      if (response.statusCode == 201) {
+        return true;
+      }else{
+        throw Exception('Error al confirmar el cambio  de contraseña');
+      }
+    }catch(e){
+      rethrow;
+    }
+  }
+
+  Future<void> deleteAccount() async {
+    final authToken = await _secureStorage.read(key: 'authToken');
+    final curp = await _secureStorage.read(key: 'curp');
+
+    final url = Uri.parse('$_apiUrl/user/users/$curp');
+
+    final response = await http.delete(url,
+      headers: {
+      'Authorization': 'Bearer $authToken',
+      'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      _secureStorage.deleteAll();
+      _prefs.clear();
+    }else{
+      throw Exception('Error al eliminar cuenta: ${response.body}');
+    }
+  }
 
 }

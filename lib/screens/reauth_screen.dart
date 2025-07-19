@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:local_auth/local_auth.dart';
@@ -9,7 +10,7 @@ import '../widgets/custom_input_field.dart';
 import 'home_screen.dart';
 import 'qr_detector_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'recover_password_screen.dart';
+import 'reset_password_screen.dart';
 
 
 class ReauthScreen extends StatefulWidget {
@@ -76,11 +77,24 @@ class _ReauthScreenState extends State<ReauthScreen> {
     try {
       bool authenticated = await auth.authenticate(
         localizedReason: 'Por favor, autentícate para continuar',
-        options: const AuthenticationOptions(biometricOnly: false),
+        options: const AuthenticationOptions(biometricOnly: true),
       );
 
       if (authenticated) {
-        await _navigateByRole();
+        final storage = FlutterSecureStorage();
+        String? pass = await storage.read(key: 'userPassword');
+        if (pass == null) {
+          setState(() => error = 'No hay contraseña almacenada. Inicia sesión manualmente primero.');
+          return;
+        }
+        try{
+          await AuthService().signIn(widget.userEmail.trim(), pass.trim());
+
+          if (!mounted) return;
+          await _navigateByRole();
+        }catch(e){
+          setState(() => error = 'Autenticacion con Huella fallida');
+        }
       } else {
         setState(() => error = 'No fue posible autenticarse');
       }
@@ -95,20 +109,18 @@ class _ReauthScreenState extends State<ReauthScreen> {
 
 
   Future<void> _validatePassword() async {
-    String enteredPassword = _passwordController.text.trim();
-
-    setState(() {
-      error = ''; // limpia errores previos correctamente
-    });
+    final authService = AuthService();
 
     try {
-      await AuthService().signIn(widget.userEmail, enteredPassword);
+      await authService.signIn(
+        widget.userEmail.trim(),
+        _passwordController.text.trim(),
+      );
 
-      if (!mounted) return;
-      await _navigateByRole();
     } catch (e) {
       setState(() {
         error = 'Contraseña incorrecta o error: $e';
+        print(e);
       });
     }
   }
@@ -118,7 +130,6 @@ class _ReauthScreenState extends State<ReauthScreen> {
 @override
   Widget build(BuildContext context) {
     final emailController = TextEditingController(text: widget.userEmail);
-    print('REAUTH - ${widget.userEmail}');
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Center(
@@ -234,7 +245,7 @@ class _ReauthScreenState extends State<ReauthScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => RecoverPasswordScreen()),
+                  MaterialPageRoute(builder: (_) => ResetPasswordScreen()),
                 );
               },
               child: Text(
@@ -301,7 +312,7 @@ class _ReauthScreenState extends State<ReauthScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => RecoverPasswordScreen()),
+                  MaterialPageRoute(builder: (_) => ResetPasswordScreen()),
                 );
               },
               child: Text(

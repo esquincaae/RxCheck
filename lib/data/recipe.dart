@@ -10,7 +10,6 @@ final Dio dio = Dio();
 
 Future<List<Recipe>> fetchRecipes() async {
   final token = await storage.read(key: 'authToken');
-  print('RECIPEDATA - Token: $token');
 
   try {
     final response = await dio.get(
@@ -29,17 +28,11 @@ Future<List<Recipe>> fetchRecipes() async {
 
       List<Recipe> recipes = data.map((e) => Recipe.fromJson(e)).toList();
 
-      // Imprimir recetas en consola
-      for (var r in recipes) {
-        print('Receta ID: ${r.id}, Fecha: ${r.issue_at}');
-      }
-
-      return recipes;
+      return recipes.reversed.toList();
     } else {
       throw Exception('Error en la respuesta: ${response.statusCode}');
     }
   } catch (e) {
-    print('Error al obtener recetas: $e');
     throw Exception('Error al obtener recetas');
   }
 }

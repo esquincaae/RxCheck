@@ -145,10 +145,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-
-
   Future<void> _logout() async {
     await _authService.signOut();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => SelectModeLoginScreen()),
+          (route) => false,
+    );
+  }
+
+  Future<void> _deleteAccount() async {
+    await _authService.deleteAccount();
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => SelectModeLoginScreen()),
@@ -306,7 +313,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       text: 'Eliminar Cuenta',
                                       backgroundColor: Colors.red,
                                       foregroundColor: Colors.white,
-                                      onPressed: _logout,
+                                      onPressed: _deleteAccount,
                                       padding: EdgeInsets.symmetric(vertical: 12.h),
                                       borderRadius: 15.r,
                                     ),

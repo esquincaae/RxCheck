@@ -71,9 +71,6 @@ class _AuthWrapperState extends State<AuthWrapper> {
 // Devuelve un Map con info de usuario, o null si no hay
   Future<Map<String, String>> _getUserData() async {
     final userData = await _secureStorage.readAll();
-
-    print('MAIN - SecureStorage: $userData');
-
     return userData;
 
   }
@@ -126,7 +123,7 @@ class SessionTimeoutHandler extends StatefulWidget {
 class _SessionTimeoutHandlerState extends State<SessionTimeoutHandler> with WidgetsBindingObserver {
   Timer? _inactivityTimer;
   final FlutterSecureStorage _storage = FlutterSecureStorage();
-  final Duration timeoutDuration = Duration(hours: 5);
+  final Duration timeoutDuration = Duration(minutes: 20);
 
   void _startTimer() {
     _inactivityTimer?.cancel();

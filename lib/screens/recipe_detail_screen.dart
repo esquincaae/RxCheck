@@ -1,14 +1,11 @@
 import 'package:RxCheck/services/qr_service.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'medicine_list_screen.dart';
-import '../widgets/custom_button.dart';
 import '../models/recipe.dart';
 import '../data/medication.dart';
-import '../services/qr_service.dart';
 
 class RecipeDetailScreen extends StatefulWidget {
   final Recipe recipe;
@@ -133,7 +130,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                     ),
                   ),
 
-                  ...(role != 'farmacia' ? [
+                  if(role != 'farmacia') ...[
                     const SizedBox(height: 12),
                     const Text(
                       'Muestra este QR en la Farmacia',
@@ -165,16 +162,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                         ),
                       ),
                     ),
-                  ]
-                :[
-                    const SizedBox(height: 12),
-                      CustomButton(
-                        icon: Icon(MdiIcons.update),
-                        text: 'Actualizar',
-                        onPressed: qrService.updateStatusMedications(widget.medication),
-                        padding: EdgeInsets.symmetric(vertical: 12.h),
-                      ),
-                  ]),
+                  ],
                 ],
               ),
             );

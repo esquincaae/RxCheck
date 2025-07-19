@@ -9,7 +9,7 @@ import '../widgets/custom_button.dart';
 import '../widgets/styles.dart';
 import '../services/auth_service.dart';
 import 'home_screen.dart';
-import 'recover_password_screen.dart';
+import 'reset_password_screen.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -57,8 +57,6 @@ class _LoginScreenState extends State<LoginScreen> {
       isLoading = true;
       error = '';
     });
-    print('LOGIN - Correo electrónico: ${emailController.text}');
-    print('LOGIN - Contraseña: ${passController.text}');
     try {
       await authService.signIn(
         emailController.text.trim(),
@@ -82,6 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
     } catch (e) {
+      print('$e');
       setState(() {
         error = e.toString().replaceFirst('Exception: ', '');
       });
@@ -186,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => RecoverPasswordScreen()),
+                                      builder: (_) => ResetPasswordScreen()),
                                 );
                               },
                               child: Text('Presiona Aquí',

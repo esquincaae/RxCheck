@@ -10,8 +10,9 @@ final _baseUrl = dotenv.env['API_URL'];
 class QrService {
   final _secureStorage = const FlutterSecureStorage();
 
-  Future<bool> updateStatusMedications(medication) async {
+  Future<bool> updateStatusMedications(List<int> medication) async {
     final token = await _secureStorage.read(key: 'authToken');
+    final qr = await _secureStorage.read(key: 'qrCode');
     try {
       final body = jsonEncode({
         'medications': medication,
@@ -19,16 +20,18 @@ class QrService {
       print('Body enviado: $body');
 
       final response = await http.post(
-        Uri.parse('$_baseUrl/recipe/supply/'),
+        Uri.parse('$_baseUrl/recipe/supply/$qr'),
         headers: {'Content-Type': 'application/json',
           'Authorization': 'Bearer $token'},
         body: body,
       );
       if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print('$data');
+        print('STATUSCODE: ${response.statusCode}');
         return true;
-      } else {
-        throw Exception('Error al suplir medica');
-      }
+      } else
+        throw Exception('Error al surtir medicamentos');
     } catch (e) {
       rethrow;
     }
