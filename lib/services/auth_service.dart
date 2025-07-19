@@ -98,7 +98,7 @@ class AuthService {
       } else {
         print('Error al registrar usuario: ${response.statusCode}');
         final data = jsonDecode(response.body);
-        throw Exception(data['error'] ?? 'Error al registrar usuario');
+        throw Exception(data['message'] ?? 'Error al registrar usuario');
       }
     } catch (e) {
       rethrow;
