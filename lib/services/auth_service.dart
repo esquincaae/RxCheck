@@ -21,7 +21,7 @@ class AuthService {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  Future<Map<String, dynamic>> signIn(String email, String password) async {
+  Future<bool> signIn(String email, String password) async {
     final response = await http.post(
       Uri.parse('$_baseUrl/auth/login'),
       headers: {'Content-Type': 'application/json'},
@@ -43,6 +43,8 @@ class AuthService {
       await _prefs.setString('nombre', user['nombre'] ?? '');
       await _prefs.setString('role', user['role'] ?? '');
       await _prefs.setString('direccion', user['direccion'] ?? '');
+
+      await _secureStorage.write(key: 'curp', value: user['curp'] ?? '');
       await _secureStorage.write(key: 'userEmail', value: email);
       await _secureStorage.write(key: 'authToken', value: accessToken);
       await _secureStorage.write(key: 'userPassword', value: password);
@@ -58,8 +60,7 @@ class AuthService {
       };
 
       print('Datos de login: $userData');
-
-      return userData;
+      return true;
     } else {
       final decoded = jsonDecode(response.body);
       String message = decoded['message'] ?? '';
@@ -157,6 +158,7 @@ class AuthService {
       );
 
       if (response.statusCode == 201) {
+        await _secureStorage.write(key: 'userPassword', value: newPassword);
         return true;
       }else{
         throw Exception('Error al confirmar el cambio  de contraseña');
@@ -167,22 +169,17 @@ class AuthService {
   }
 
   Future<void> deleteAccount() async {
-    final authToken = await _secureStorage.read(key: 'authToken');
     final curp = await _secureStorage.read(key: 'curp');
+    final url = Uri.parse('$_baseUrl/users/$curp');
 
-    final url = Uri.parse('$_apiUrl/user/users/$curp');
-
-    final response = await http.delete(url,
-      headers: {
-      'Authorization': 'Bearer $authToken',
-      'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    );
+    final response = await http.delete(url);
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
+      print('Cuenta Eliminada Exitosamente: ${response.body}');
       _secureStorage.deleteAll();
       _prefs.clear();
     }else{
+      print('Error al eliminar cuenta: ${response.statusCode}');
       throw Exception('Error al eliminar cuenta: ${response.body}');
     }
   }

@@ -31,7 +31,7 @@ class UserService {
           return null;
         }
       } catch (e) {
-        print('Error al obtener datos del USERSERVICE: $e');
+        print('Error al obtener datos del usuario');
         return null;
       }
     }
@@ -61,7 +61,7 @@ class UserService {
       print('Response: $imageUrl');
       return imageUrl;
     } catch (e) {
-      print('Error al actualizar el perfil: $e');
+      print('Error al actualizar el perfil');
       return null;
     }
   }
@@ -95,7 +95,7 @@ class UserService {
       print('USERSERVICE - Response status code - ${response.statusCode}');
       return response.statusCode == 200;
     } catch (e) {
-      print('Error al actualizar el perfil: $e');
+      print('Error al actualizar el perfil');
       return false;
     }
   }
@@ -108,6 +108,16 @@ class UserService {
       return User.fromJson(jsonData);
     } else {
       throw Exception('Error al obtener usuario');
+    }
+  }
+
+  Future<bool> getUserByCurpExists(String curp) async {
+    final response = await http.get(Uri.parse('$_baseUrl/user/users/$curp'),
+        headers: {'Authorization': 'Bearer ${await AuthService().getToken()}'});
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
     }
   }
 

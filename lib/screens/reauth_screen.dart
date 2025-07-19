@@ -116,10 +116,11 @@ class _ReauthScreenState extends State<ReauthScreen> {
         widget.userEmail.trim(),
         _passwordController.text.trim(),
       );
-
+      if(!mounted) return;
+      await _navigateByRole();
     } catch (e) {
       setState(() {
-        error = 'Contraseña incorrecta o error: $e';
+        error = 'Contraseña incorrecta';
         print(e);
       });
     }

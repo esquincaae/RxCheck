@@ -7,6 +7,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:screen_protector/screen_protector.dart';
 import 'screens/reauth_screen.dart';
 import 'screens/select_mode_login_screen.dart';
+import 'services/user_service.dart';
+import 'models/user.dart';
 
 
 // Permite navegar desde fuera del árbol de widgets
@@ -70,9 +72,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
 // Devuelve un Map con info de usuario, o null si no hay
   Future<Map<String, String>> _getUserData() async {
+    final _userService = UserService();
     final userData = await _secureStorage.readAll();
+    final curp = userData['curp'] ?? '';
+    bool curpExist = await _userService.getUserByCurpExists(curp);
+    await _secureStorage.write(key: 'curpExist', value: curpExist.toString());
     return userData;
-
   }
 
 
@@ -92,16 +97,18 @@ class _AuthWrapperState extends State<AuthWrapper> {
             body: Center(child: Text('Error: ${snapshot.error}')),
           );
         }
-
         final user = snapshot.data!;
         final userEmail = user['userEmail'] ?? '';
         final isLoggedIn = user.isNotEmpty
             || (userEmail != null && userEmail.isNotEmpty);
-
-        if (isLoggedIn) {
-
-          return ReauthScreen(userEmail: userEmail,);
-        } else {
+        final curpExist = user['curpExist'] ?? '';
+        if (curpExist != false){
+          if (isLoggedIn) {
+            return ReauthScreen(userEmail: userEmail,);
+          } else {
+            return SelectModeLoginScreen();
+          }
+        }else{
           return SelectModeLoginScreen();
         }
       },
@@ -123,7 +130,7 @@ class SessionTimeoutHandler extends StatefulWidget {
 class _SessionTimeoutHandlerState extends State<SessionTimeoutHandler> with WidgetsBindingObserver {
   Timer? _inactivityTimer;
   final FlutterSecureStorage _storage = FlutterSecureStorage();
-  final Duration timeoutDuration = Duration(minutes: 20);
+  final Duration timeoutDuration = Duration(minutes: 5);
 
   void _startTimer() {
     _inactivityTimer?.cancel();
