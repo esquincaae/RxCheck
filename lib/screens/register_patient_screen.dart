@@ -50,6 +50,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
 
       try {
         bool result = await AuthService().signUp(
+          '', //no tiene RFC
           curpController.text.trim(),
           nombresController.text.trim(),
           'paciente', // rol
@@ -173,6 +174,7 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                 CustomInputField(
                                   controller: curpController,
                                   label: "CURP",
+                                  toUpperCase: true,
                                   icon: Icons.perm_identity_outlined,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {

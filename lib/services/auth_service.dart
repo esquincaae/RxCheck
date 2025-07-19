@@ -69,10 +69,11 @@ class AuthService {
   }
 
 
-  Future<bool> signUp(String curp, String nombre, String role, String email, String password, String telefono,
+  Future<bool> signUp(String rfc, String curp, String nombre, String role, String email, String password, String telefono,
                       String direccion, String primerApellido, String segundoApellido,) async { //<------------------- REGISTRO
     try {
       final body = jsonEncode({
+        'rfc': rfc,
         'curp': curp,
         'nombre': nombre,
         'apellidoPaterno': primerApellido,
@@ -87,7 +88,7 @@ class AuthService {
       print('Body enviado: $body');
 
       final response = await http.post(
-        Uri.parse('$_baseUrl/users/'),
+        Uri.parse('$_baseUrl/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: body,
       );
@@ -95,6 +96,7 @@ class AuthService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
+        print('Error al registrar usuario: ${response.statusCode}');
         final data = jsonDecode(response.body);
         throw Exception(data['error'] ?? 'Error al registrar usuario');
       }

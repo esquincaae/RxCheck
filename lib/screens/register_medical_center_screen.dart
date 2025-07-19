@@ -47,6 +47,7 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
       try {
         bool result = await AuthService().signUp(
           rfcController.text.trim(), // al no tener curp, se mete el RFC
+          ' ',
           nombreFarmaciaController.text.trim(),
           'farmacia', // rol
           emailController.text.trim(),
@@ -132,6 +133,7 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
                                 CustomInputField(
                                   controller: rfcController,
                                   label: "RFC",
+                                  toUpperCase: true,
                                   icon: Icons.perm_identity_outlined,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
@@ -168,7 +170,7 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
                                   icon: Icons.phone_outlined,
                                   keyboardType: TextInputType.phone,
                                   validator: (value) {
-                                    if (value == null || value.isEmpty) {
+                                    if (value == null || value.isEmpty || value.length != 10) {
                                       return 'Por favor ingresa el teléfono';
                                     }
                                     return null;

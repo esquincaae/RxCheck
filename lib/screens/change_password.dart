@@ -112,6 +112,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           CustomInputField(
                             controller: codeController,
                             label: "Codigo de seguridad",
+                            toUpperCase: true,
                             icon: Icons.code_outlined,
                             keyboardType: TextInputType.text,
                             validator: (value) {

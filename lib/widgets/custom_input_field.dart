@@ -15,6 +15,7 @@ class CustomInputField extends StatelessWidget {
   final IconData? icon;
   final bool isDisabled;
   final bool readOnly;
+  final bool toUpperCase;
   final filled = false;
 
   const CustomInputField({
@@ -28,6 +29,7 @@ class CustomInputField extends StatelessWidget {
     this.icon,
     this.isDisabled = false,
     this.readOnly = false,
+    this.toUpperCase = false,
   });
 
   @override
@@ -40,7 +42,19 @@ class CustomInputField extends StatelessWidget {
         enabled: enabled,
         keyboardType: keyboardType,
         validator: validator,
-        // Si está deshabilitado, no permitir edición ni selección ni foco
+        textCapitalization:
+        toUpperCase ? TextCapitalization.characters : TextCapitalization.none,
+        onChanged: toUpperCase
+            ? (value) {
+          final upperText = value.toUpperCase();
+          if (value != upperText) {
+            controller.value = controller.value.copyWith(
+              text: upperText,
+              selection: TextSelection.collapsed(offset: upperText.length),
+            );
+          }
+        }
+            : null,
         readOnly: isDisabled || readOnly,
         enableInteractiveSelection: !(isDisabled || readOnly),
         focusNode: (isDisabled || readOnly) ? AlwaysDisabledFocusNode() : null,
