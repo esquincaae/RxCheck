@@ -65,6 +65,8 @@ class _ReauthScreenState extends State<ReauthScreen> {
         context,
         MaterialPageRoute(builder: (_) => QRDetectorScreen()),
       );
+    }else{
+      throw Exception('Esta cuenta no tiene los permisos para usar esta app.');
     }
   }
 

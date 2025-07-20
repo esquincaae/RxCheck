@@ -66,14 +66,16 @@ class _LoginScreenState extends State<LoginScreen> {
       final SharedPreferences localPrefs = await SharedPreferences.getInstance();
       final role = localPrefs.getString('role');
       if (role == 'paciente'){
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => HomeScreen()),
+              (route) => false,
         );
       }else if(role == 'farmacia'){
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => QRDetectorScreen()),
+              (route) => false,
         );
       }else{
         showDenegadePermision(context);

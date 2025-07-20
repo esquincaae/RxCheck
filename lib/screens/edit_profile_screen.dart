@@ -10,7 +10,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/custom_input_field.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/styles.dart';
-import 'select_mode_login_screen.dart';
+import 'splash_screen.dart';
 import '../services/user_service.dart';
 import '../services/auth_service.dart';
 
@@ -149,7 +149,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     await _authService.signOut();
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => SelectModeLoginScreen()),
+      MaterialPageRoute(builder: (_) => SplashScreen()),
           (route) => false,
     );
   }
@@ -158,7 +158,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     await _authService.deleteAccount();
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => SelectModeLoginScreen()),
+      MaterialPageRoute(builder: (_) => SplashScreen()),
           (route) => false,
     );
   }

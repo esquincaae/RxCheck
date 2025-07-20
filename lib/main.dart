@@ -6,9 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:screen_protector/screen_protector.dart';
 import 'screens/reauth_screen.dart';
-import 'screens/select_mode_login_screen.dart';
+import 'screens/splash_screen.dart';
 import 'services/user_service.dart';
-import 'models/user.dart';
 
 
 // Permite navegar desde fuera del árbol de widgets
@@ -105,11 +104,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
         if (curpExist != false){
           if (isLoggedIn) {
             return ReauthScreen(userEmail: userEmail,);
+
           } else {
-            return SelectModeLoginScreen();
+            return SplashScreen();
           }
         }else{
-          return SelectModeLoginScreen();
+          return SplashScreen();
         }
       },
     );
@@ -141,7 +141,7 @@ class _SessionTimeoutHandlerState extends State<SessionTimeoutHandler> with Widg
     await _storage.deleteAll();
     if (navigatorKey.currentState != null) {
       navigatorKey.currentState!.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => SelectModeLoginScreen()),
+        MaterialPageRoute(builder: (_) => SplashScreen()),
             (route) => false,
       );
     }

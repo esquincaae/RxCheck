@@ -5,12 +5,12 @@ import '../widgets/custom_button.dart';
 import 'register_patient_screen.dart';
 import 'register_medical_center_screen.dart';
 
-class SelectModeLoginScreen extends StatefulWidget {
+class SplashScreen extends StatefulWidget {
   @override
-  _SelectModeLoginScreenState createState() => _SelectModeLoginScreenState();
+  _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SelectModeLoginScreenState extends State<SelectModeLoginScreen> {
+class _SplashScreenState extends State<SplashScreen> {
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passController = TextEditingController();
