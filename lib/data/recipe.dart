@@ -3,17 +3,24 @@ import '../models/recipe.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-final baseUrl = dotenv.env['API_URL'];
+final String baseUrl = dotenv.env['API_URL'] ?? '';
+
 
 final storage = FlutterSecureStorage();
-final Dio dio = Dio();
+final Dio dio = Dio(
+  BaseOptions(
+    baseUrl: baseUrl,
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 5),
+  ),
+);
 
 Future<List<Recipe>> fetchRecipes() async {
   final token = await storage.read(key: 'authToken');
 
   try {
     final response = await dio.get(
-      '$baseUrl/recipe',
+      '/recipe',
       options: Options(
         headers: {
           'Authorization': 'Bearer $token',
@@ -21,6 +28,7 @@ Future<List<Recipe>> fetchRecipes() async {
         },
       ),
     );
+
 
     if (response.statusCode == 200) {
       final decoded = response.data;

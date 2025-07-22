@@ -17,7 +17,7 @@ Future<List<Medication>> fetchMedicines(int recipeId) async {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
     },
-  );
+  ).timeout(const Duration(seconds: 5));
 
   if (response.statusCode == 200) {
     final decoded = json.decode(response.body);
@@ -42,7 +42,7 @@ Future<List<Medication>> fetchMedicinesQrCode(String? qrCode) async {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
     },
-  );
+  ).timeout(const Duration(seconds: 5));
 
   print(response.statusCode);
   if (response.statusCode == 200) {
@@ -70,7 +70,7 @@ Future<String> fetchQrImage(int recipeId) async {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
     },
-  );
+  ).timeout(const Duration(seconds: 5));
 
   if (response.statusCode == 200) {
     final decoded = json.decode(response.body);

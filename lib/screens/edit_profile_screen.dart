@@ -305,31 +305,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ),
                                 SizedBox(height: 20.h),
                               ],
+                              SizedBox(height: 15.h),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Expanded(
-                                    child: CustomButton(
-                                      icon: Icon(MdiIcons.accountRemove, color: Colors.white),
-                                      text: 'Eliminar Cuenta',
-                                      backgroundColor: Colors.red,
-                                      foregroundColor: Colors.white,
-                                      onPressed: _deleteAccount,
-                                      padding: EdgeInsets.symmetric(vertical: 12.h),
-                                      borderRadius: 15.r,
-                                    ),
-                                  ),
-                                  SizedBox(width: 10.w),
-                                  Expanded(
-                                    child: CustomButton(
-                                      icon: SvgPicture.asset(
-                                        'assets/icons/verify.svg', color: Colors.white,
+                                      CustomButton(
+                                        icon: Icon(MdiIcons.accountRemove, color: Colors.white),
+                                        text: 'Eliminar Cuenta',
+                                        backgroundColor: Colors.red,
+                                        foregroundColor: Colors.white,
+                                        onPressed: _deleteAccount,
+                                        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 20.w),
+                                        borderRadius: 15.r,
                                       ),
-                                      text: 'Activar 2FA',
-                                      backgroundColor: Colors.green,
-                                      onPressed: _updateProfile,
-                                      padding: EdgeInsets.symmetric(vertical: 12.h),
-                                    ),
-                                  ),
+
+                                  SizedBox(width: 10.w),
                                 ],
                               ),
                             ],

@@ -24,7 +24,7 @@ class UserService {
         final response = await http.get(
           Uri.parse('$_baseUrl/user/users/$curp'),
           headers: {'Authorization': 'Bearer $token'},
-        );
+        ).timeout(const Duration(seconds: 5));
         if (response.statusCode == 200) {
           return jsonDecode(response.body);
         } else {
@@ -43,6 +43,9 @@ class UserService {
       final prefs = await SharedPreferences.getInstance();
       final curp = prefs.getString('curp');
       final token = await _secureStorage.read(key: 'authToken');
+      final nombre = await prefs.getString('nombre');
+      final userEmail = await _secureStorage.read(key: 'userEmail');
+      final userPass = await _secureStorage.read(key: 'userPassword');
       print('$curp - $token');
 
       if (curp == null || token == null) {
@@ -53,9 +56,14 @@ class UserService {
       var request = http.MultipartRequest('PUT', uri);
       request.headers['Authorization'] = 'Bearer $token';
 
+      request.fields['nombre'] = nombre ?? '';
+      request.fields['email'] = userEmail ?? '';
+      request.fields['password'] = userPass ?? '';
+      request.fields['curp'] = curp;
       request.files.add(await http.MultipartFile.fromPath('imagen', imageFile.path));
 
-      var response = await request.send();
+
+      var response = await request.send().timeout(const Duration(seconds: 5));
       var responseBody = await response.stream.bytesToString();
       var imageUrl = jsonDecode(responseBody)['imagen'];
       print('Response: $imageUrl');
@@ -72,6 +80,9 @@ class UserService {
       final prefs = await SharedPreferences.getInstance();
       final curp = prefs.getString('curp');
       final token = await _secureStorage.read(key: 'authToken');
+      final nombre = await prefs.getString('nombre');
+      final userEmail = await _secureStorage.read(key: 'userEmail');
+      final userPass = await _secureStorage.read(key: 'userPassword');
       print('$curp - $token');
 
       if (curp == null || token == null) {
@@ -85,9 +96,13 @@ class UserService {
       request.fields['email'] = email;
       request.fields['telefono'] = phone;
       request.fields['domicilio'] = direction;
+      request.fields['nombre'] = nombre ?? '';
+      request.fields['email'] = userEmail ?? '';
+      request.fields['password'] = userPass ?? '';
+      request.fields['curp'] = curp;
 
 
-      var response = await request.send();
+      var response = await request.send().timeout(const Duration(seconds: 5));
       var responseBody = await response.stream.bytesToString();
 
       print('Response: $responseBody');
@@ -102,7 +117,8 @@ class UserService {
 
   Future<User> getUserByCurp(String curp) async {
     final response = await http.get(Uri.parse('$_baseUrl/user/users/$curp'),
-        headers: {'Authorization': 'Bearer ${await AuthService().getToken()}'});
+        headers: {'Authorization': 'Bearer ${await AuthService().getToken()}'})
+        .timeout(const Duration(seconds: 5));
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
       return User.fromJson(jsonData);

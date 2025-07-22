@@ -8,7 +8,7 @@ class ApiService {
 
   // Obtener lista de recetas del usuario
   Future<List<Recipe>> fetchRecipes() async {
-    final response = await http.get(Uri.parse('$_baseUrl/recipe'));
+    final response = await http.get(Uri.parse('$_baseUrl/recipe')).timeout(const Duration(seconds: 5));
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
       return data.map((item) => Recipe.fromJson(item)).toList();
@@ -19,7 +19,7 @@ class ApiService {
 
   // Obtener detalle de recetas por id
   Future<List<Medication>> fetchRecipeDetail(int id) async {
-    final response = await http.get(Uri.parse('$_baseUrl/recipe/$id'));
+    final response = await http.get(Uri.parse('$_baseUrl/recipe/$id')).timeout(const Duration(seconds: 5));
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
       return data.map((item) => Medication.fromJson(item)).toList();

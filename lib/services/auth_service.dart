@@ -29,7 +29,7 @@ class AuthService {
         'email': email,
         'password': password,
       }),
-    );
+    ).timeout(const Duration(seconds: 5));
 
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body);
@@ -91,7 +91,7 @@ class AuthService {
         Uri.parse('$_baseUrl/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: body,
-      );
+      ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
@@ -113,7 +113,7 @@ class AuthService {
         Uri.parse('$_baseUrl/logout'),
         headers: {'Content-Type': 'application/json',
                   'Authorization': 'Bearer $token'},
-      );
+      ).timeout(const Duration(seconds: 5));
     }
 
     await _prefs.clear();
@@ -135,7 +135,7 @@ class AuthService {
         Uri.parse('$_baseUrl/auth/request-password-reset'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email}),
-      );
+      ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 201) {
           return true;
@@ -157,7 +157,7 @@ class AuthService {
           'email': email,
           'code': code,
           'newPassword': newPassword}),
-      );
+      ).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 201) {
         await _secureStorage.write(key: 'userPassword', value: newPassword);
@@ -174,7 +174,7 @@ class AuthService {
     final curp = await _secureStorage.read(key: 'curp');
     final url = Uri.parse('$_baseUrl/users/$curp');
 
-    final response = await http.delete(url);
+    final response = await http.delete(url).timeout(const Duration(seconds: 5));
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       print('Cuenta Eliminada Exitosamente: ${response.body}');
