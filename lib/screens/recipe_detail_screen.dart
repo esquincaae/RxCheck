@@ -36,7 +36,6 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     final prefs = await SharedPreferences.getInstance();
     final userRole = prefs.getString('role') ?? '';
 
-    print('RECIPEDETAIL - $userRole');
     setState(() {
       role = userRole;
     });

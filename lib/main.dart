@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,17 +17,20 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('es', null);
   final file = File('.env');
   print('¿Existe .env? ${await file.exists()}');
   await dotenv.load(fileName: ".env");
-
-  runApp(
+  SystemChrome.setPreferredOrientations([
+  DeviceOrientation.portraitUp,
+  ]).then((_) => runApp(
       ScreenUtilInit(
-          designSize: Size(390, 844),
-          minTextAdapt: true,
-          builder: (context, child) => MyApp(),
-      child: MyApp(),
+        designSize: Size(390, 844),
+        minTextAdapt: true,
+        builder: (context, child) => MyApp(),
+        child: MyApp(),
       ),
+    )
   );
 }
 
@@ -103,7 +108,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         final curpExist = user['curpExist'] ?? '';
         if (curpExist != false){
           if (isLoggedIn) {
-            return ReauthScreen(userEmail: userEmail,);
+            return ReauthScreen(userEmail: userEmail);
 
           } else {
             return SplashScreen();
@@ -130,7 +135,7 @@ class SessionTimeoutHandler extends StatefulWidget {
 class _SessionTimeoutHandlerState extends State<SessionTimeoutHandler> with WidgetsBindingObserver {
   Timer? _inactivityTimer;
   final FlutterSecureStorage _storage = FlutterSecureStorage();
-  final Duration timeoutDuration = Duration(minutes: 5);
+  final Duration timeoutDuration = Duration(seconds: 5);
 
   void _startTimer() {
     _inactivityTimer?.cancel();
@@ -138,10 +143,10 @@ class _SessionTimeoutHandlerState extends State<SessionTimeoutHandler> with Widg
   }
 
   void _handleSessionTimeout() async {
-    await _storage.deleteAll();
+    final userEmail = await _storage.read(key: 'userEmail') ?? '';
     if (navigatorKey.currentState != null) {
       navigatorKey.currentState!.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => SplashScreen()),
+        MaterialPageRoute(builder: (_) => ReauthScreen(userEmail: userEmail)),
             (route) => false,
       );
     }

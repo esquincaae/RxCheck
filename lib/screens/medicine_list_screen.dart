@@ -83,13 +83,13 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
     try {
       final fetchedMedicines = await fetchMedicinesQrCode(widget.recipe.qr);
 
-      final allSupplied = fetchedMedicines.isNotEmpty && fetchedMedicines.every((med) => med.supplied);
+      //final allSupplied = fetchedMedicines.isNotEmpty && fetchedMedicines.every((med) => med.supplied);
 
-      if(allSupplied){
+      if(medicines.isEmpty){
         setState(() {
           isLoading = false;
           medicines = [];
-          errorMessage = 'Esta receta ya ha sido surtida';
+          errorMessage = 'Receta ya surtida';
         });
       }else{
         setState(() {
@@ -114,14 +114,18 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
       return Center(child: CircularProgressIndicator());
     }
     if (errorMessage != null) {
-      if(errorMessage == '[404]'){
+      if(errorMessage == 'Receta ya surtida'){
         return Center(
           child: Text(errorMessage!,
-            style: TextStyle(color: errorMessage == 'Exception: Esta Receta ya ha sido surtida por una Farmacia' ? Colors.blue : Colors.red
+            style: TextStyle(color: errorMessage == 'Receta ya surtida' ? Colors.blue : Colors.red
             ),
           ),
         );
       }
+    }
+
+    if (medicines.isEmpty) {
+      return Center(child: Text('Recetas ya surtidas'));
     }
 
 

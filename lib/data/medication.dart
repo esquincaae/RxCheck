@@ -55,10 +55,8 @@ Future<List<Medication>> fetchMedicinesQrCode(String? qrCode) async {
         .map((item) => Medication.fromJson(item)).toList();
 
     return medications;
-  } else if (response.statusCode == 404) {
-    throw Exception('Esta Receta ya ha sido surtida por una Farmacia');
   }else {
-    throw Exception('Error al obtener medicamentos: ${response.statusCode}');
+    throw Exception('Error al obtener medicamentos');
   }
 }
 
