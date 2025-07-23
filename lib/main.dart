@@ -135,7 +135,7 @@ class SessionTimeoutHandler extends StatefulWidget {
 class _SessionTimeoutHandlerState extends State<SessionTimeoutHandler> with WidgetsBindingObserver {
   Timer? _inactivityTimer;
   final FlutterSecureStorage _storage = FlutterSecureStorage();
-  final Duration timeoutDuration = Duration(seconds: 5);
+  final Duration timeoutDuration = Duration(minutes: 5);
 
   void _startTimer() {
     _inactivityTimer?.cancel();

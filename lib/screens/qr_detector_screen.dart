@@ -87,6 +87,7 @@ class _QRDetectorScreenState extends State<QRDetectorScreen> {
       ),
     );
   }
+
   Future<void> _navigateToRecipeDetailOrError(String? qrCode) async{
 
     await secure.write(key: 'qrCode', value: qrCode);

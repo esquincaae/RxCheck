@@ -1,3 +1,4 @@
+import 'package:RxCheck/screens/qr_detector_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -85,25 +86,44 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
 
       //final allSupplied = fetchedMedicines.isNotEmpty && fetchedMedicines.every((med) => med.supplied);
 
-      if(medicines.isEmpty){
+      if (fetchedMedicines.isEmpty) {
+        print('MEDICINES isEmpty - $fetchedMedicines');
         setState(() {
           isLoading = false;
           medicines = [];
           errorMessage = 'Receta ya surtida';
         });
-      }else{
+      } else {
         setState(() {
+          print('MEDICINES notIsEmpty- $fetchedMedicines');
           medicines = fetchedMedicines.where((med) => !med.supplied).toList();
           isLoading = false;
           errorMessage = null;
         });
       }
-    }catch (e) {
-      setState(() {
-        errorMessage = '$e';
-        print(errorMessage);
-        isLoading = false;
-      });
+    } catch (e) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => QRDetectorScreen()),
+            (route) => false,
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error al verificar la receta: Esta receta ya no esta disponible.',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+          setState(() {
+            errorMessage = '$e';
+            print(errorMessage);
+            isLoading = false;
+          });
+      }
     }
   }
 
@@ -117,17 +137,13 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
       if(errorMessage == 'Receta ya surtida'){
         return Center(
           child: Text(errorMessage!,
-            style: TextStyle(color: errorMessage == 'Receta ya surtida' ? Colors.blue : Colors.red
+            style: TextStyle(color: errorMessage == 
+                'Receta ya surtida' ? Colors.blue : Colors.red
             ),
           ),
         );
       }
     }
-
-    if (medicines.isEmpty) {
-      return Center(child: Text('Recetas ya surtidas'));
-    }
-
 
     return Scaffold(
       backgroundColor: Colors.white,

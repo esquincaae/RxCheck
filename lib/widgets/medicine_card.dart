@@ -6,6 +6,7 @@ import '../models/medication.dart';
 
 class MedicineCard extends StatefulWidget {
   final Medication medicine;
+
   const MedicineCard({Key? key, required this.medicine}) : super(key: key);
 
   @override

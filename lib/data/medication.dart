@@ -35,29 +35,35 @@ Future<List<Medication>> fetchMedicines(int recipeId) async {
 }
 
 Future<List<Medication>> fetchMedicinesQrCode(String? qrCode) async {
-  final token = await storage.read(key: 'authToken');
-  final response = await http.get(
-    Uri.parse('$apiUrl/recipe/verify/$qrCode'),
-    headers: {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    },
-  ).timeout(const Duration(seconds: 5));
+  try{
+    final token = await storage.read(key: 'authToken');
+    final response = await http.get(
+      Uri.parse('$apiUrl/recipe/verify/$qrCode'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    ).timeout(const Duration(seconds: 5));
 
-  print(response.statusCode);
-  if (response.statusCode == 200) {
+    print('response de medicamentos - ${response.body} - ${response.statusCode}');
     final decoded = json.decode(response.body);
     final data = decoded['data'] as Map<String, dynamic>;
-    print(data);
 
-    final List<dynamic> medicationsJson = data['medications'] ?? [];
-    List<Medication> medications = medicationsJson
-        .map((item) => Medication.fromJson(item)).toList();
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final List<dynamic> medicationsJson = data['medications'] ?? [];
+      List<Medication> medications = medicationsJson
+          .map((item) => Medication.fromJson(item)).toList();
+      print('Medicamentos - $medications');
+      return medications;
 
-    return medications;
-  }else {
-    throw Exception('Error al obtener medicamentos');
+    }else {
+      throw Exception('${decoded['message'] ?? 'Error desconocido'}');
+    }
+  }catch(e){
+    print('Error en fetchMedicinesQrCode: $e');
+    rethrow;
   }
+
 }
 
 Future<String> fetchQrImage(int recipeId) async {
