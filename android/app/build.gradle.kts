@@ -1,26 +1,25 @@
 plugins {
     id("com.android.application")
-    id("kotlin-android") // Puedes mantenerlo, aunque 'kotlin("android")' ya lo implica
     kotlin("android")
-    // El Flutter Gradle Plugin debe aplicarse después de los plugins de Android y Kotlin.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// --- Importaciones de clases de Java (¡Esto es CLAVE!) ---
 import java.io.FileInputStream
-        import java.util.Properties
-// --------------------------------------------------------
+import java.util.Properties
 
-// Carga las propiedades de tu archivo key.properties
+// --- Cargar propiedades de key.properties si existe ---
+val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
-// Ahora podemos usar 'Properties()' y 'FileInputStream()' directamente
-// porque ya están importados arriba.
-val keystoreProperties = Properties().apply {
-    load(FileInputStream(keystorePropertiesFile))
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    println("🔐 Se cargó key.properties correctamente.")
+} else {
+    println("⚠️ Advertencia: No se encontró 'key.properties'. Se omitirá la configuración de firma.")
 }
 
 android {
-    namespace = "com.CodeCraft.RxCheck" // ¡Asegúrate de que este sea el namespace correcto de tu app!
+    namespace = "com.CodeCraft.RxCheck"
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
@@ -34,30 +33,35 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.CodeCraft.RxCheck" // ¡Asegúrate de que este sea el ID de aplicación correcto de tu app!
+        applicationId = "com.CodeCraft.RxCheck"
         minSdk = 23
         targetSdk = 35
-        versionCode = flutter.versionCode.toInt() // Asegúrate de convertir a Int
+        versionCode = flutter.versionCode.toInt()
         versionName = flutter.versionName
     }
 
     signingConfigs {
-        create("release") {
-            // Usa .getProperty() para un acceso más seguro a los valores String de Properties
-            keyAlias = keystoreProperties.getProperty("keyAlias")
-            keyPassword = keystoreProperties.getProperty("keyPassword")
-            storeFile = file(keystoreProperties.getProperty("storeFile")) // 'file()' es importante aquí
-            storePassword = keystoreProperties.getProperty("storePassword")
+        if (keystoreProperties.isNotEmpty()) {
+            create("release") {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+            }
         }
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
-            // Opcional: Habilitar ProGuard/R8 para reducir el tamaño de la app
+            if (signingConfigs.findByName("release") != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isShrinkResources = true
             isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
