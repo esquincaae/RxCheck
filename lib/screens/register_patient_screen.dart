@@ -3,13 +3,19 @@ import '../screens/login_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/custom_input_field.dart';
 import '../services/auth_service.dart';
-
+import 'dart:core';
 class RegisterPatientScreenPage extends StatefulWidget {
   @override
   State<RegisterPatientScreenPage> createState() => _RegistroPacientePageState();
 }
 
 class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
+  RegExp regCurp = RegExp(r'^[a-zA-Z0-9]{18}$');
+  RegExp regMail = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+  RegExp regName = RegExp(r'^[a-zA-Z]+$');
+  RegExp regNum = RegExp(r'^[0-9]{10}$');
+  RegExp regPass = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$');
+
   final _formKey = GlobalKey<FormState>();
   final PageController _pageController = PageController();
 
@@ -183,7 +189,11 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     if (value.length != 18) {
                                       return 'Debe constar de 18 caracteres';
                                     }
+                                    if (!regCurp.hasMatch(value)) {
+                                      return 'Solo se permiten letras y números';
+                                    }
                                     return null;
+
                                   },
                                 ),
                                 CustomInputField(
@@ -196,6 +206,9 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     }
                                     if (value.length < 3) {
                                       return 'Debe constar de al menos 3 caracteres';
+                                    }
+                                    if (!regName.hasMatch(value)) {
+                                      return 'Solo se permiten letras';
                                     }
                                     return null;
                                   },
@@ -211,6 +224,9 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     if (value.length < 3) {
                                       return 'Debe constar de al menos 3 caracteres';
                                     }
+                                    if (!regName.hasMatch(value)) {
+                                      return 'Solo se permiten letras';
+                                    }
                                     return null;
                                   },
                                 ),
@@ -224,6 +240,9 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     }
                                     if (value.length < 3) {
                                       return 'Debe constar de al menos 3 caracteres';
+                                    }
+                                    if (!regName.hasMatch(value)) {
+                                      return 'Solo se permiten letras';
                                     }
                                     return null;
                                   },
@@ -274,6 +293,9 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     if (!value.contains('@')) {
                                       return 'Ingresa un correo válido';
                                     }
+                                    if (!regMail.hasMatch(value)) {
+                                      return 'no ingrese caracteres invalidos';
+                                    }
                                     return null;
                                   },
                                 ),
@@ -287,7 +309,10 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                       return 'Por favor ingresa tu Numero de Telefono';
                                     }
                                     if (value.length != 10) {
-                                      return 'Ingresa un Numero de Telefono válido';
+                                      return 'Telefono debe constar de 10 caracteres';
+                                    }
+                                    if (!regNum.hasMatch(value)) {
+                                      return 'Solo se permiten numeros';
                                     }
                                     return null;
                                   },
@@ -303,6 +328,10 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                                     }
                                     if (value.length < 8) {
                                       return 'Debe tener al menos 8 caracteres';
+                                    }
+                                    if (!regPass.hasMatch(value)) {
+                                      return 'Debe contener al menos una letra mayúscula, '
+                                          'una letra minúscula, un número y un carácter especial';
                                     }
                                     return null;
                                   },

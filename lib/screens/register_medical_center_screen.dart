@@ -10,6 +10,14 @@ class RegisterMedicalCenterScreen extends StatefulWidget {
 }
 
 class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScreen> {
+  RegExp regRFC = RegExp(r'^[a-zA-Z0-9]{12,13}$');
+  RegExp regCurp = RegExp(r'^[a-zA-Z0-9]{18}$');
+  RegExp regMail = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+  RegExp regName = RegExp(r'^[a-zA-Z]+$');
+  RegExp regNum = RegExp(r'^[0-9]{10}$');
+  RegExp regPass = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$');
+  RegExp regDir = RegExp(r'^[a-zA-Z0-9 ]+$');
+
   final _formKey = GlobalKey<FormState>();
   final PageController _pageController = PageController();
 
@@ -137,7 +145,13 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
                                   icon: Icons.perm_identity_outlined,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Por favor el RFC de la farmacia';
+                                      return 'Por favor ingrese el RFC de la farmacia';
+                                    }
+                                    if (value.length != 12 && value.length != 13) {
+                                      return 'Debe constar de 12 o 13 caracteres';
+                                    }
+                                    if (!regRFC.hasMatch(value)) {
+                                      return 'Solo se permiten letras y números';
                                     }
                                     return null;
                                   },
@@ -150,6 +164,12 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
                                     if (value == null || value.isEmpty) {
                                       return 'Por favor ingresa el nombre de la farmacia';
                                     }
+                                    if (value.length < 3) {
+                                      return 'Debe constar de al menos 3 caracteres';
+                                    }
+                                    if (!regName.hasMatch(value)) {
+                                      return 'Solo se permiten letras';
+                                    }
                                     return null;
                                   },
                                 ),
@@ -161,6 +181,12 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
                                     if (value == null || value.isEmpty) {
                                       return 'Por favor ingresa la dirección';
                                     }
+                                    if (value.length < 3) {
+                                      return 'Debe constar de al menos 3 caracteres';
+                                    }
+                                    if (!regDir.hasMatch(value)) {
+                                      return 'Solo se permiten letras y números';
+                                    }
                                     return null;
                                   },
                                 ),
@@ -170,8 +196,14 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
                                   icon: Icons.phone_outlined,
                                   keyboardType: TextInputType.phone,
                                   validator: (value) {
-                                    if (value == null || value.isEmpty || value.length != 10) {
-                                      return 'Por favor ingresa el teléfono';
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor ingresa un numero valido';
+                                    }
+                                    if (value.length != 10) {
+                                      return 'Teléfono debe constar de 10 caracteres';
+                                    }
+                                    if (!regNum.hasMatch(value)) {
+                                      return 'Solo se permiten números';
                                     }
                                     return null;
                                   },
@@ -226,8 +258,8 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
                                     if (value == null || value.isEmpty) {
                                       return 'Por favor ingresa tu correo';
                                     }
-                                    if (!value.contains('@')) {
-                                      return 'Ingresa un correo válido';
+                                    if (!regMail.hasMatch(value)) {
+                                      return 'no ingrese caracteres invalidos';
                                     }
                                     return null;
                                   },
@@ -241,8 +273,8 @@ class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScree
                                     if (value == null || value.isEmpty) {
                                       return 'Por favor ingresa tu contraseña';
                                     }
-                                    if (value.length < 8) {
-                                      return 'Debe tener al menos 8 caracteres';
+                                    if (regPass.hasMatch(value)) {
+                                      return 'ingrese una contraseña valida';
                                     }
                                     return null;
                                   },

@@ -24,12 +24,16 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  RegExp regNum = RegExp(r'^[0-9]{10}$');
+  RegExp regMail = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+  RegExp regDir = RegExp(r'^[a-zA-Z0-9 ]+$');
 
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
   final _userService = UserService();
   final picker = ImagePicker();
 
+  final rfcController = TextEditingController();
   final curpController = TextEditingController();
   final primerApellidoController = TextEditingController();
   final segundoApellidoController = TextEditingController();
@@ -63,6 +67,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           nameController.text = data['nombre'] ?? '';
           primerApellidoController.text = data['apellidoPaterno'] ?? '';
           segundoApellidoController.text = data['apellidoMaterno'] ?? '';
+          rfcController.text = data['rfc'] ?? '';
           curpController.text = data['curp'] ?? '';
           emailController.text = data['email'] ?? '';
           phoneController.text = data['telefono'] ?? '';
@@ -268,7 +273,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ],
                               CustomInputField(
                                 label: userRole == 'farmacia' ? 'RFC' : 'CURP',
-                                controller: curpController,
+                                controller: userRole == 'farmacia' ? rfcController : curpController,
                                 icon: MdiIcons.account,
                                 isDisabled: true,
                                 validator: (value) => value == null || value.isEmpty
@@ -280,18 +285,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 controller: emailController,
                                 icon: MdiIcons.email,
                                 keyboardType: TextInputType.emailAddress,
-                                validator: (value) => value == null || value.isEmpty
-                                    ? 'Ingresa tu correo'
-                                    : null,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Ingresa tu correo';
+                                  }
+                                  if (!regMail.hasMatch(value)) {
+                                    return 'no ingrese caracteres invalidos';
+                                }
+                                  return null;
+                                },
                               ),
                               CustomInputField(
                                 label: 'Teléfono',
                                 controller: phoneController,
                                 icon: MdiIcons.phone,
                                 keyboardType: TextInputType.phone,
-                                validator: (value) => value == null || value.isEmpty
-                                    ? 'Ingresa tu teléfono'
-                                    : null,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Ingresa tu teléfono';
+                                  }
+                                  if (value.length != 10) {
+                                    return 'Teléfono debe constar de 10 caracteres';
+                                  }
+                                  if (!regNum.hasMatch(value)) {
+                                    return 'Solo se permiten números';
+                                  }
+                                  return null;
+                                }
                               ),
                               if (userRole == 'farmacia') ...[
                                 CustomInputField(
@@ -299,9 +319,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   controller: direccionController,
                                   icon: MdiIcons.directions,
                                   isDisabled: true,
-                                  validator: (value) => value == null || value.isEmpty
-                                      ? 'Ingresa tu dirección'
-                                      : null,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Ingresa tu dirección';
+                                    }
+                                    if (value.length < 3) {
+                                      return 'Debe constar de al menos 3 caracteres';
+                                    }
+                                    if (!regDir.hasMatch(value)) {
+                                      return 'Solo se permiten letras y números';
+                                    }
+                                    return null;
+                                  }
                                 ),
                                 SizedBox(height: 20.h),
                               ],
