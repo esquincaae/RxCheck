@@ -108,16 +108,27 @@ class AuthService {
 
   Future<void> signOut() async { //<-------------------------------------------------------- CERRAR SESION
     final token = await _secureStorage.read(key: 'authToken');
-    if (token != null) {
-      await http.post(
-        Uri.parse('$_baseUrl/logout'),
-        headers: {'Content-Type': 'application/json',
-                  'Authorization': 'Bearer $token'},
-      ).timeout(const Duration(seconds: 5));
+    try{
+      if (token != null) {
+        final response = await http.post(
+          Uri.parse('$_baseUrl/logout'),
+          headers: {'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token'},
+        ).timeout(const Duration(seconds: 5));
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          await _prefs.clear();
+          await _secureStorage.deleteAll();
+        } else {
+          print('Error al cerrar sesión: ${response.statusCode}');
+        }
+      }
+    }catch(e){
+      rethrow;
     }
 
-    await _prefs.clear();
-    await _secureStorage.deleteAll();
+
+
   }
 
   Future<String> getCurp() async {

@@ -40,28 +40,45 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool isUserLoggedIn = false;
+
   @override
   void initState() {
     super.initState();
     ScreenProtector.preventScreenshotOn();
+    checkUserLogin();
+  }
+
+  Future<void> checkUserLogin() async {
+    final storage = FlutterSecureStorage();
+    final email = await storage.read(key: 'userEmail');
+
+    setState(() {
+      isUserLoggedIn = email != null && email.isNotEmpty;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SessionTimeoutHandler(
-      child: MaterialApp(
-        navigatorKey: navigatorKey,
-        debugShowCheckedModeBanner: false,
-        title: 'Recetas Medicas',
-        theme: ThemeData(
-          appBarTheme: AppBarTheme(backgroundColor: Color(0xFFF1F4F8),
-                                    foregroundColor: Colors.black),
-            scaffoldBackgroundColor: Color(0xFFF1F4F8),
-            progressIndicatorTheme: ProgressIndicatorThemeData(color: Colors.blue,),
-            primarySwatch: Colors.blue),
-        home: AuthWrapper(),
+    final app = MaterialApp(
+      navigatorKey: navigatorKey,
+      debugShowCheckedModeBanner: false,
+      title: 'Recetas Medicas',
+      theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          backgroundColor: Color(0xFFF1F4F8),
+          foregroundColor: Colors.black,
+        ),
+        scaffoldBackgroundColor: Color(0xFFF1F4F8),
+        progressIndicatorTheme: ProgressIndicatorThemeData(color: Colors.blue),
+        primarySwatch: Colors.blue,
       ),
+      home: AuthWrapper(),
     );
+
+    return isUserLoggedIn
+        ? SessionTimeoutHandler(child: app)
+        : app;
   }
 }
 
@@ -135,7 +152,7 @@ class SessionTimeoutHandler extends StatefulWidget {
 class _SessionTimeoutHandlerState extends State<SessionTimeoutHandler> with WidgetsBindingObserver {
   Timer? _inactivityTimer;
   final FlutterSecureStorage _storage = FlutterSecureStorage();
-  final Duration timeoutDuration = Duration(minutes: 5);
+  final Duration timeoutDuration = Duration(minutes: 10);
 
   void _startTimer() {
     _inactivityTimer?.cancel();
@@ -144,9 +161,25 @@ class _SessionTimeoutHandlerState extends State<SessionTimeoutHandler> with Widg
 
   void _handleSessionTimeout() async {
     final userEmail = await _storage.read(key: 'userEmail') ?? '';
+    print('Timeout triggered. userEmail = $userEmail');
+    if (userEmail.isEmpty) {
+      return;
+    }
+
+    final currentContext = navigatorKey.currentContext;
+    if (currentContext != null) {
+      final currentWidget = ModalRoute.of(currentContext)?.settings.name;
+      if (currentWidget == '/reauth') {
+        return;
+      }
+    }
+
     if (navigatorKey.currentState != null) {
       navigatorKey.currentState!.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => ReauthScreen(userEmail: userEmail)),
+        MaterialPageRoute(
+            settings: RouteSettings(name: '/reauth'),
+            builder: (_) => ReauthScreen(userEmail: userEmail),
+        ),
             (route) => false,
       );
     }
