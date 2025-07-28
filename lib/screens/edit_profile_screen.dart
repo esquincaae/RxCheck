@@ -153,6 +153,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _logout() async {
     await _authService.signOut();
     if (!mounted) return;
+    secureStorage.deleteAll();
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => SplashScreen()),
           (route) => false,
@@ -162,6 +163,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _deleteAccount() async {
     await _authService.deleteAccount();
     if (!mounted) return;
+    secureStorage.deleteAll();
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => SplashScreen()),
           (route) => false,

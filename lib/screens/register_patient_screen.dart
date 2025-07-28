@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import '../screens/login_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'dart:core';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../screens/login_screen.dart';
 import '../widgets/custom_input_field.dart';
 import '../services/auth_service.dart';
-import 'dart:core';
+
 class RegisterPatientScreenPage extends StatefulWidget {
   @override
   State<RegisterPatientScreenPage> createState() => _RegistroPacientePageState();
@@ -159,218 +162,247 @@ class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
                     padding: getCardPadding(),
                     child: Form(
                       key: _formKey,
-                      child: PageView(
-                        controller: _pageController,
-                        physics: const NeverScrollableScrollPhysics(),
+                      child: Column(
                         children: [
-                          // Página 1: Datos personales
-                          SingleChildScrollView(
-                            child: Column(
+                          Expanded(
+                            child: PageView(
+                              controller: _pageController,
+                              physics: const NeverScrollableScrollPhysics(),
                               children: [
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: IconButton(
-                                    icon: const Icon(Icons.arrow_back),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
+                                // Página 1: Datos personales
+                                SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: IconButton(
+                                          icon: const Icon(Icons.arrow_back),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(height: basePadding / 2),
+                                      CustomInputField(
+                                        controller: curpController,
+                                        label: "CURP",
+                                        toUpperCase: true,
+                                        icon: Icons.perm_identity_outlined,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Por favor ingrese su CURP';
+                                          }
+                                          if (value.length != 18) {
+                                            return 'Debe constar de 18 caracteres';
+                                          }
+                                          if (!regCurp.hasMatch(value)) {
+                                            return 'Solo se permiten letras y números';
+                                          }
+                                          return null;
+
+                                        },
+                                      ),
+                                      CustomInputField(
+                                        controller: nombresController,
+                                        label: "Nombre(s)",
+                                        icon: Icons.person_outline_outlined,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Por favor ingresa tu nombre';
+                                          }
+                                          if (value.length < 3) {
+                                            return 'Debe constar de al menos 3 caracteres';
+                                          }
+                                          if (!regName.hasMatch(value)) {
+                                            return 'Solo se permiten letras';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      CustomInputField(
+                                        controller: primerApellidoController,
+                                        label: "Primer Apellido",
+                                        icon: Icons.person_outline_outlined,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Por favor ingrese su Primer Apellido';
+                                          }
+                                          if (value.length < 3) {
+                                            return 'Debe constar de al menos 3 caracteres';
+                                          }
+                                          if (!regName.hasMatch(value)) {
+                                            return 'Solo se permiten letras';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      CustomInputField(
+                                        controller: segundoApellidoController,
+                                        label: "Segundo Apellido",
+                                        icon: Icons.person_outline_outlined,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Por favor ingrese su Segundo Apellido';
+                                          }
+                                          if (value.length < 3) {
+                                            return 'Debe constar de al menos 3 caracteres';
+                                          }
+                                          if (!regName.hasMatch(value)) {
+                                            return 'Solo se permiten letras';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      SizedBox(height: basePadding * 1.5),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          if (_formKey.currentState!.validate()) {
+                                            _pageController.nextPage(
+                                              duration: const Duration(milliseconds: 500),
+                                              curve: Curves.ease,
+                                            );
+                                          }
+                                        },
+                                        style: getButtonStyle(),
+                                        child: const Text("Siguiente"),
+                                      ),
+                                      SizedBox(height: basePadding),
+                                    ],
                                   ),
                                 ),
-                                SizedBox(height: basePadding / 2),
-                                CustomInputField(
-                                  controller: curpController,
-                                  label: "CURP",
-                                  toUpperCase: true,
-                                  icon: Icons.perm_identity_outlined,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Por favor ingrese su CURP';
-                                    }
-                                    if (value.length != 18) {
-                                      return 'Debe constar de 18 caracteres';
-                                    }
-                                    if (!regCurp.hasMatch(value)) {
-                                      return 'Solo se permiten letras y números';
-                                    }
-                                    return null;
 
-                                  },
+                                // Página 2: Datos de cuenta
+                                SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: IconButton(
+                                          icon: const Icon(Icons.arrow_back),
+                                          onPressed: () {
+                                            _pageController.previousPage(
+                                              duration: const Duration(milliseconds: 500),
+                                              curve: Curves.ease,
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      CustomInputField(
+                                        controller: emailController,
+                                        label: "Correo electrónico",
+                                        icon: Icons.email_outlined,
+                                        keyboardType: TextInputType.emailAddress,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Por favor ingresa tu correo';
+                                          }
+                                          if (!value.contains('@')) {
+                                            return 'Ingresa un correo válido';
+                                          }
+                                          if (!regMail.hasMatch(value)) {
+                                            return 'no ingrese caracteres invalidos';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      CustomInputField(
+                                        controller: telefonoController,
+                                        label: "Telefono",
+                                        icon: Icons.phone_android_outlined,
+                                        keyboardType: TextInputType.number,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Por favor ingresa tu Numero de Telefono';
+                                          }
+                                          if (value.length != 10) {
+                                            return 'Telefono debe constar de 10 caracteres';
+                                          }
+                                          if (!regNum.hasMatch(value)) {
+                                            return 'Solo se permiten numeros';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      CustomInputField(
+                                        controller: passController,
+                                        label: "Contraseña",
+                                        icon: Icons.lock_outline_rounded,
+                                        obscureText: true,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Por favor ingresa tu contraseña';
+                                          }
+                                          if (value.length < 8) {
+                                            return 'Debe tener al menos 8 caracteres';
+                                          }
+                                          if (!regPass.hasMatch(value)) {
+                                            return 'Debe contener al menos una letra mayúscula, '
+                                                'una letra minúscula, un número y un carácter especial';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      CustomInputField(
+                                        controller: confirmPassController,
+                                        label: "Confirmar Contraseña",
+                                        icon: Icons.lock_outline_rounded,
+                                        obscureText: true,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Por favor confirma tu contraseña';
+                                          }
+                                          if (value != passController.text) {
+                                            return 'Las contraseñas no coinciden';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      SizedBox(height: basePadding * 1.5),
+                                      isLoading
+                                          ? const CircularProgressIndicator()
+                                          : ElevatedButton(
+                                        onPressed: registerUser,
+                                        style: getButtonStyle(),
+                                        child: const Text("Registrarse"),
+                                      ),
+                                      if (error.isNotEmpty)
+                                        Padding(
+                                          padding: EdgeInsets.only(top: basePadding),
+                                          child: Text(error,
+                                              style: TextStyle(color: errorColor)),
+                                        ),
+                                      SizedBox(height: basePadding),
+                                    ],
+                                  ),
                                 ),
-                                CustomInputField(
-                                  controller: nombresController,
-                                  label: "Nombre(s)",
-                                  icon: Icons.person_outline_outlined,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Por favor ingresa tu nombre';
-                                    }
-                                    if (value.length < 3) {
-                                      return 'Debe constar de al menos 3 caracteres';
-                                    }
-                                    if (!regName.hasMatch(value)) {
-                                      return 'Solo se permiten letras';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                CustomInputField(
-                                  controller: primerApellidoController,
-                                  label: "Primer Apellido",
-                                  icon: Icons.person_outline_outlined,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Por favor ingrese su Primer Apellido';
-                                    }
-                                    if (value.length < 3) {
-                                      return 'Debe constar de al menos 3 caracteres';
-                                    }
-                                    if (!regName.hasMatch(value)) {
-                                      return 'Solo se permiten letras';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                CustomInputField(
-                                  controller: segundoApellidoController,
-                                  label: "Segundo Apellido",
-                                  icon: Icons.person_outline_outlined,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Por favor ingrese su Segundo Apellido';
-                                    }
-                                    if (value.length < 3) {
-                                      return 'Debe constar de al menos 3 caracteres';
-                                    }
-                                    if (!regName.hasMatch(value)) {
-                                      return 'Solo se permiten letras';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                SizedBox(height: basePadding * 1.5),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      _pageController.nextPage(
-                                        duration: const Duration(milliseconds: 500),
-                                        curve: Curves.ease,
-                                      );
-                                    }
-                                  },
-                                  style: getButtonStyle(),
-                                  child: const Text("Siguiente"),
-                                ),
-                                SizedBox(height: basePadding),
                               ],
                             ),
                           ),
-
-                          // Página 2: Datos de cuenta
-                          SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: IconButton(
-                                    icon: const Icon(Icons.arrow_back),
-                                    onPressed: () {
-                                      _pageController.previousPage(
-                                        duration: const Duration(milliseconds: 500),
-                                        curve: Curves.ease,
-                                      );
-                                    },
-                                  ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextButton(
+                                onPressed: () async {
+                                  final url = Uri.parse('https://rxcheck.icu/privacy');
+                                  if (!await launchUrl(url)) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('No se pudo abrir la política de privacidad', style: TextStyle(color: Colors.white)
+                                      ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: const Text(
+                                  'Politica de Privacidad',
+                                  style: TextStyle(decoration: TextDecoration.underline, color: Colors.blue),
                                 ),
-                                CustomInputField(
-                                  controller: emailController,
-                                  label: "Correo electrónico",
-                                  icon: Icons.email_outlined,
-                                  keyboardType: TextInputType.emailAddress,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Por favor ingresa tu correo';
-                                    }
-                                    if (!value.contains('@')) {
-                                      return 'Ingresa un correo válido';
-                                    }
-                                    if (!regMail.hasMatch(value)) {
-                                      return 'no ingrese caracteres invalidos';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                CustomInputField(
-                                  controller: telefonoController,
-                                  label: "Telefono",
-                                  icon: Icons.phone_android_outlined,
-                                  keyboardType: TextInputType.number,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Por favor ingresa tu Numero de Telefono';
-                                    }
-                                    if (value.length != 10) {
-                                      return 'Telefono debe constar de 10 caracteres';
-                                    }
-                                    if (!regNum.hasMatch(value)) {
-                                      return 'Solo se permiten numeros';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                CustomInputField(
-                                  controller: passController,
-                                  label: "Contraseña",
-                                  icon: Icons.lock_outline_rounded,
-                                  obscureText: true,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Por favor ingresa tu contraseña';
-                                    }
-                                    if (value.length < 8) {
-                                      return 'Debe tener al menos 8 caracteres';
-                                    }
-                                    if (!regPass.hasMatch(value)) {
-                                      return 'Debe contener al menos una letra mayúscula, '
-                                          'una letra minúscula, un número y un carácter especial';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                CustomInputField(
-                                  controller: confirmPassController,
-                                  label: "Confirmar Contraseña",
-                                  icon: Icons.lock_outline_rounded,
-                                  obscureText: true,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Por favor confirma tu contraseña';
-                                    }
-                                    if (value != passController.text) {
-                                      return 'Las contraseñas no coinciden';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                SizedBox(height: basePadding * 1.5),
-                                isLoading
-                                    ? const CircularProgressIndicator()
-                                    : ElevatedButton(
-                                  onPressed: registerUser,
-                                  style: getButtonStyle(),
-                                  child: const Text("Registrarse"),
-                                ),
-                                if (error.isNotEmpty)
-                                  Padding(
-                                    padding: EdgeInsets.only(top: basePadding),
-                                    child: Text(error,
-                                        style: TextStyle(color: errorColor)),
-                                  ),
-                                SizedBox(height: basePadding),
-                              ],
-                            ),
-                          ),
+                              )
+                            ]
+                          )
                         ],
                       ),
+
                     ),
                   ),
                 ),

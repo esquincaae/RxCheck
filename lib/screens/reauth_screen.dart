@@ -148,7 +148,7 @@ class _ReauthScreenState extends State<ReauthScreen> {
               ),
               SizedBox(height: 20.h),
               Text(
-                'Iniciar Sesión',
+                'Reautenticar Sesión',
                 style: AppTextStyles.logo,
                 textAlign: TextAlign.center,
               ),

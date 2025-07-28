@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:screen_protector/screen_protector.dart';
+import 'screens/register_medical_center_screen.dart';
+import 'screens/register_patient_screen.dart';
 import 'screens/reauth_screen.dart';
 import 'screens/splash_screen.dart';
 import 'services/user_service.dart';
@@ -120,8 +122,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         }
         final user = snapshot.data!;
         final userEmail = user['userEmail'] ?? '';
-        final isLoggedIn = user.isNotEmpty
-            || (userEmail != null && userEmail.isNotEmpty);
+        final isLoggedIn = user.isNotEmpty || (userEmail != null && userEmail.isNotEmpty && userEmail != '');
         final curpExist = user['curpExist'] ?? '';
         if (curpExist != false){
           if (isLoggedIn) {
@@ -152,7 +153,7 @@ class SessionTimeoutHandler extends StatefulWidget {
 class _SessionTimeoutHandlerState extends State<SessionTimeoutHandler> with WidgetsBindingObserver {
   Timer? _inactivityTimer;
   final FlutterSecureStorage _storage = FlutterSecureStorage();
-  final Duration timeoutDuration = Duration(minutes: 10);
+  final Duration timeoutDuration = Duration(minutes: 30);
 
   void _startTimer() {
     _inactivityTimer?.cancel();
@@ -162,14 +163,14 @@ class _SessionTimeoutHandlerState extends State<SessionTimeoutHandler> with Widg
   void _handleSessionTimeout() async {
     final userEmail = await _storage.read(key: 'userEmail') ?? '';
     print('Timeout triggered. userEmail = $userEmail');
-    if (userEmail.isEmpty) {
+    if (userEmail.isEmpty || userEmail == '') {
       return;
     }
 
     final currentContext = navigatorKey.currentContext;
     if (currentContext != null) {
       final currentWidget = ModalRoute.of(currentContext)?.settings.name;
-      if (currentWidget == '/reauth') {
+      if (currentWidget == '/reauth' || currentWidget == '/splash' || currentWidget == '/register_patient' || currentWidget == '/register_medical_center') {
         return;
       }
     }
