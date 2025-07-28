@@ -20,6 +20,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await _prefs.setString('curp', data['user']['curp']);
       await _prefs.setString('nombre', data['user']['nombre']);
       await _prefs.setString('role', data['user']['role']);
+      await _prefs.setString('email', data['user']['email']);
       return true;
     }
     throw Exception(jsonDecode(resp.body)['message'] ?? 'Login failed');
