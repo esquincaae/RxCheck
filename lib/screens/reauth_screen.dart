@@ -240,22 +240,24 @@ class _ReauthScreenState extends State<ReauthScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            Expanded(
+                child: Text(
               '¿Olvidaste tu contraseña?',
               style: AppTextStyles.defaultText,
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => ResetPasswordScreen()),
-                );
-              },
-              child: Text(
-                'Presiona Aquí',
-                style: AppTextStyles.linkText,
               ),
             ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => ResetPasswordScreen()),
+                  );
+                  },
+                  child: Text(
+                    'Presiona Aquí',
+                    style: AppTextStyles.linkText,
+                  ),
+              ),
           ],
         ),
       ],
@@ -307,9 +309,11 @@ class _ReauthScreenState extends State<ReauthScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            Expanded(
+              child: Text(
               '¿Olvidaste tu contraseña?',
               style: AppTextStyles.defaultText,
+              ),
             ),
             TextButton(
               onPressed: () {

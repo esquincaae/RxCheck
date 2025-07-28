@@ -98,12 +98,14 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Padding(
-        padding: EdgeInsets.only(top: 100.h),
-        child: Center(
-          child: SingleChildScrollView(
+
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(top: 100.h),
+          child: Center(
             child: Column(
               children: [
+                SizedBox(height: 50.h),
                 SvgPicture.asset(
                   'assets/images/Logo_LogRec.svg',
                   height: 150.h,
@@ -111,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const CircularProgressIndicator(),
                 ),
                 SizedBox(height: 10.h),
-                Text('RxCheck', style: AppTextStyles.logo),
+                Text('Iniciar Sesión', style: AppTextStyles.logo),
                 SizedBox(height: 20.h),
                 Container(
                   decoration: AppDecorations.card,
@@ -130,6 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           ),
                         ),
+                        SizedBox(height: 20.h),
                         CustomInputField(
                           controller: emailController,
                           label: "Correo electrónico",
@@ -163,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: 25.h),
                         isLoading
                             ? SizedBox(
-                          height: 30.h,
+                          height: 60.h,
                           width: 30.w,
                           child: const CircularProgressIndicator(),
                         )
@@ -176,25 +179,36 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 25.w, vertical: 10.h),
                         ),
-                        SizedBox(height: 20.h),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        SizedBox(height: 60.h),
+
+
+
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 8.0,
                           children: [
-                            Text('¿Olvidaste tu contraseña?',
-                                style: AppTextStyles.defaultText),
-                            TextButton(
-                              onPressed: () {
+                            Text("¿Olvidaste tu contraseña?", style: TextStyle(fontSize: 16)),
+                            GestureDetector(
+                              onTap: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                      builder: (_) => ResetPasswordScreen()),
+                                  MaterialPageRoute(builder: (context) => ResetPasswordScreen()),
                                 );
                               },
-                              child: Text('Presiona Aquí',
-                                  style: AppTextStyles.linkText),
+                              child: Text(
+                                "Presiona Aquí",
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
                             ),
                           ],
                         ),
+
+
+
                         if (error.isNotEmpty)
                           Padding(
                             padding: EdgeInsets.only(top: 10.h),
@@ -210,6 +224,8 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+
+
     );
   }
 }

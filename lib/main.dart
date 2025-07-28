@@ -122,7 +122,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         }
         final user = snapshot.data!;
         final userEmail = user['userEmail'] ?? '';
-        final isLoggedIn = user.isNotEmpty || (userEmail != null && userEmail.isNotEmpty && userEmail != '');
+        final isLoggedIn = (userEmail != null && userEmail.isNotEmpty && userEmail != '');
         final curpExist = user['curpExist'] ?? '';
         if (curpExist != false){
           if (isLoggedIn) {

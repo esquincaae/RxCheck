@@ -1,30 +1,43 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:mocktail/mocktail.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:RxCheck/main.dart';
 
+// Mock para FlutterSecureStorage
+class MockSecureStorage extends Mock implements FlutterSecureStorage {}
+
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+  TestWidgetsFlutterBinding.ensureInitialized();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  late MockSecureStorage mockStorage;
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  setUpAll(() {
+    mockStorage = MockSecureStorage();
+
+    // Reemplaza el método estático por el mock
+    FlutterSecureStorage.setMockInitialValues({}); // Esto simula valores vacíos
+
+    // Simulamos que no hay sesión activa
+    when(() => mockStorage.read(key: any(named: 'key')))
+        .thenAnswer((_) async => null);
+
+    // Simula lectura completa del storage
+    when(() => mockStorage.readAll()).thenAnswer((_) async => {});
+  });
+
+  testWidgets('Carga MyApp y muestra CircularProgressIndicator', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: MyApp(),
+      ),
+    );
+
+    // Espera el build inicial y posibles FutureBuilder
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verifica que hay un CircularProgressIndicator mientras se carga
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }
