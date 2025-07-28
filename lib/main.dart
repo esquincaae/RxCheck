@@ -1,5 +1,3 @@
-// lib/main.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +24,8 @@ import 'application/usecases/supply_medications_usecase.dart';
 import 'application/usecases/get_user_usecase.dart';
 import 'application/usecases/update_profile_usecase.dart';
 import 'application/usecases/update_image_usecase.dart';
+import 'application/usecases/request_password_reset_usecase.dart';
+import 'application/usecases/confirm_password_reset_usecase.dart';
 
 // ─── VIEWMODELS ───────────────────────────────────────────────────────────────
 import 'presentation/viewmodels/login_viewmodel.dart';
@@ -33,9 +33,13 @@ import 'presentation/viewmodels/signup_viewmodel.dart';
 import 'presentation/viewmodels/recipe_list_viewmodel.dart';
 import 'presentation/viewmodels/recipe_detail_viewmodel.dart';
 import 'presentation/viewmodels/edit_profile_viewmodel.dart';
+import 'presentation/viewmodels/reset_password_viewmodel.dart';
+import 'presentation/viewmodels/confirm_password_viewmodel.dart';
 
 // ─── SCREENS ─────────────────────────────────────────────────────────────────
 import 'presentation/screens/splash_screen.dart';
+import 'presentation/screens/reset_password_screen.dart';
+import 'presentation/screens/confirm_password_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,6 +69,8 @@ Future<void> main() async {
   final getUserUc       = GetUserUseCase(userRepo);
   final updateProfileUc = UpdateProfileUseCase(userRepo);
   final updateImageUc   = UpdateImageUseCase(userRepo);
+  final requestResetUc  = RequestPasswordResetUseCase(authRepo);
+  final confirmResetUc  = ConfirmPasswordResetUseCase(authRepo);
 
   runApp(
     MultiProvider(
@@ -76,12 +82,18 @@ Future<void> main() async {
           create: (_) => RecipeDetailViewModel(fetchMedsUc, fetchQrUc, supplyMedsUc),
         ),
         ChangeNotifierProvider(create: (_) => EditProfileViewModel(getUserUc, updateProfileUc, updateImageUc)),
+        ChangeNotifierProvider(create: (_) => ResetPasswordViewModel(requestResetUc)),
+        ChangeNotifierProvider(create: (_) => ConfirmPasswordViewModel(confirmResetUc)),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'RxCheck',
         theme: ThemeData(primarySwatch: Colors.blue),
         home: SplashScreen(),
+        routes: {
+          '/reset': (_) => ResetPasswordScreen(),
+          '/confirm': (_) => ConfirmPasswordScreen(),
+        },
       ),
     ),
   );

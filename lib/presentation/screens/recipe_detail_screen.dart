@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/recipe_detail_viewmodel.dart';
-import '../models/recipe.dart';
+import '../../domain/entities/recipe.dart';
 import '../widgets/medicine_card.dart';
 
 class RecipeDetailScreen extends StatelessWidget {
