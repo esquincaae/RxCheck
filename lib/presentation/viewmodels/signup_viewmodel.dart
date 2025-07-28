@@ -5,6 +5,7 @@ class SignupViewModel extends ChangeNotifier {
   final SignupUseCase _useCase;
   bool isLoading = false;
   String? error;
+  bool success = false;    // ← FLAG agregado
 
   SignupViewModel(this._useCase);
 
@@ -22,6 +23,7 @@ class SignupViewModel extends ChangeNotifier {
   }) async {
     isLoading = true;
     error = null;
+    success = false;       // reset al iniciar
     notifyListeners();
     try {
       await _useCase.execute(
@@ -36,7 +38,7 @@ class SignupViewModel extends ChangeNotifier {
         email: email,
         password: password,
       );
-      // navegar a login
+      success = true;      // marcar éxito
     } catch (e) {
       error = e.toString();
     } finally {

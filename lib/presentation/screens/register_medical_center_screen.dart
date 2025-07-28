@@ -32,9 +32,9 @@ class RegisterMedicalCenterScreen extends StatelessWidget {
             vm.isLoading
                 ? CircularProgressIndicator()
                 : ElevatedButton(
-                    onPressed: () {
+                    onPressed: vm.isLoading ? null : () async {
                       if (passCtrl.text != confirmPassCtrl.text) return;
-                      vm.signup(
+                      await vm.signup(
                         rfc: rfcCtrl.text.trim(),
                         curp: '',
                         nombre: nombreCtrl.text.trim(),
@@ -46,8 +46,20 @@ class RegisterMedicalCenterScreen extends StatelessWidget {
                         email: emailCtrl.text.trim(),
                         password: passCtrl.text.trim(),
                       );
+
+                      if (vm.success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('¡Farmacia registrada con éxito!')),
+                        );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => LoginScreen()),
+                        );
+                      }
                     },
-                    child: Text('Registrar Farmacia'),
+                    child: vm.isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text('Registrar Farmacia'),
                   ),
             if (vm.error != null) Text(vm.error!, style: TextStyle(color: Colors.red)),
             TextButton(onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => LoginScreen())), child: Text('Volver a iniciar sesión')),

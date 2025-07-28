@@ -35,9 +35,9 @@ class RegisterPatientScreen extends StatelessWidget {
             vm.isLoading
                 ? CircularProgressIndicator()
                 : ElevatedButton(
-                    onPressed: () {
+                    onPressed: vm.isLoading ? null : () async {
                       if (passCtrl.text != confirmPassCtrl.text) return;
-                      vm.signup(
+                      await vm.signup(
                         rfc: '',
                         curp: curpCtrl.text.trim(),
                         nombre: nombreCtrl.text.trim(),
@@ -49,8 +49,20 @@ class RegisterPatientScreen extends StatelessWidget {
                         email: emailCtrl.text.trim(),
                         password: passCtrl.text.trim(),
                       );
+
+                      if (vm.success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('¡Paciente registrado con éxito!')),
+                        );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => LoginScreen()),
+                        );
+                      }
                     },
-                    child: Text('Registrar Paciente'),
+                    child: vm.isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text('Registrar Paciente'),
                   ),
             if (vm.error != null) Text(vm.error!, style: TextStyle(color: Colors.red)),
             TextButton(onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => LoginScreen())), child: Text('Volver a iniciar sesión')),
