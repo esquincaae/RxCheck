@@ -2,87 +2,129 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_svg/flutter_svg.dart';
 import '../viewmodels/edit_profile_viewmodel.dart';
 
-class EditProfileScreen extends StatelessWidget {
-  final _email   = TextEditingController();
-  final _phone   = TextEditingController();
-  final _address = TextEditingController();
-  final _picker  = ImagePicker();
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({Key? key}) : super(key: key);
 
-  EditProfileScreen({super.key});
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  final _form = GlobalKey<FormState>();
+  final _emailCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
+  final _addrCtrl  = TextEditingController();
+  final _picker    = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    // Disparar la carga:
+    Future.microtask(() => context.read<EditProfileViewModel>().loadUser());
+  }
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<EditProfileViewModel>();
 
-    // Cargar usuario la primera vez
-    if (vm.userData == null && !vm.isLoading) vm.loadUser();
+    if (vm.isLoading && vm.user == null) {
+      return const Scaffold(
+        backgroundColor: Color(0xFFF1F4F8),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // -- rellenar controles la primera vez que ya exista vm.user
+    if (vm.user != null && _emailCtrl.text.isEmpty) {
+      _emailCtrl.text = vm.user!.email;
+      _phoneCtrl.text = vm.user!.telefono;
+      _addrCtrl.text  = vm.user!.direccion;
+    }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Editar perfil')),
-      body: vm.isLoading && vm.userData == null
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: ListView(
+      appBar: AppBar(title: const Text('Perfil')),
+      backgroundColor: const Color(0xFFF1F4F8),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            // FOTO
+            GestureDetector(
+              onTap: vm.isLoading ? null : () async {
+                final picked = await _picker.pickImage(source: ImageSource.gallery);
+                if (picked != null) await vm.updateImage(File(picked.path));
+              },
+              child: vm.user?.imagen.isNotEmpty == true
+                ? CircleAvatar(
+                    radius: 60,
+                    backgroundImage: NetworkImage(vm.user!.imagen),
+                  )
+                : CircleAvatar(
+                    radius: 60,
+                    backgroundColor: Colors.transparent,
+                    child: SvgPicture.asset(
+                      'assets/images/Default_Avatar.svg',
+                      width: 120,
+                      height: 120,
+                    ),
+                  ),
+            ),
+            const SizedBox(height: 24),
+
+            Form(
+              key: _form,
+              child: Column(
                 children: [
-                  if (vm.userData != null) ...[
-                    CircleAvatar(
-                      radius: 48,
-                      backgroundImage: vm.userData!.imagen.isNotEmpty
-                          ? NetworkImage(vm.userData!.imagen)
-                          : null,
-                      child: vm.userData!.imagen.isEmpty
-                          ? const Icon(Icons.person, size: 48)
-                          : null,
-                    ),
-                    TextButton.icon(
-                      onPressed: () async {
-                        final x = await _picker.pickImage(source: ImageSource.gallery);
-                        if (x != null) await vm.updateImage(File(x.path));
-                      },
-                      icon: const Icon(Icons.camera_alt),
-                      label: const Text('Cambiar foto'),
-                    ),
-                    const SizedBox(height: 24),
-                    TextField(
-                      controller: _email..text = vm.userData!.email,
-                      decoration: const InputDecoration(labelText: 'Email'),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _phone..text = vm.userData!.telefono,
-                      decoration: const InputDecoration(labelText: 'Teléfono'),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _address..text = vm.userData!.direccion,
-                      decoration: const InputDecoration(labelText: 'Dirección'),
-                    ),
-                    const SizedBox(height: 24),
-                    vm.isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : ElevatedButton(
-                            onPressed: () => vm.updateProfile(
-                              _email.text.trim(),
-                              _phone.text.trim(),
-                              _address.text.trim(),
-                            ),
-                            child: const Text('Guardar cambios'),
-                          ),
-                    if (vm.message != null) ...[
-                      const SizedBox(height: 12),
-                      Text(vm.message!,
-                          style: TextStyle(
-                            color: vm.message!.contains('Error') ? Colors.red : Colors.green,
-                          )),
-                    ],
-                  ],
+                  TextFormField(
+                    controller: _emailCtrl,
+                    decoration: const InputDecoration(labelText: 'Correo'),
+                    validator: (v) => v != null && v.contains('@') ? null : 'Correo inválido',
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _phoneCtrl,
+                    decoration: const InputDecoration(labelText: 'Teléfono'),
+                    keyboardType: TextInputType.phone,
+                    validator: (v) => v != null && v.length >= 8 ? null : 'Teléfono inválido',
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _addrCtrl,
+                    decoration: const InputDecoration(labelText: 'Dirección'),
+                  ),
+                  const SizedBox(height: 24),
+                  vm.isLoading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                          onPressed: () async {
+                            if (!_form.currentState!.validate()) return;
+
+                            final ok = await vm.updateProfile(
+                              email  : _emailCtrl.text.trim(),
+                              phone  : _phoneCtrl.text.trim(),
+                              address: _addrCtrl.text.trim(),
+                            );
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  ok ? 'Perfil actualizado correctamente'
+                                    : 'El servidor rechazó la petición. Revisa los datos.',
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text('Guardar cambios'),
+                        ),
                 ],
               ),
             ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -8,13 +8,13 @@ class HttpUserDataSource {
 
   Future<http.Response> getUser(String token, String curp) {
     return http.get(
-      Uri.parse('$baseUrl/user/users/$curp'),
+      Uri.parse('$baseUrl/users/$curp'),
       headers: {'Authorization': 'Bearer $token'},
     );
   }
 
   Future<http.StreamedResponse> updateImage(String token, String curp, File imageFile) async {
-    var uri = Uri.parse('$baseUrl/user/users/$curp');
+    var uri = Uri.parse('$baseUrl/users/$curp');
     var request = http.MultipartRequest('PUT', uri);
     request.headers['Authorization'] = 'Bearer $token';
 
@@ -30,7 +30,7 @@ class HttpUserDataSource {
 
   Future<http.StreamedResponse> updateProfile(
       String token, String curp, Map<String, String> fields) async {
-    var uri = Uri.parse('$baseUrl/user/users/$curp');
+    var uri = Uri.parse('$baseUrl/users/$curp');
     var request = http.MultipartRequest('PUT', uri);
     request.headers['Authorization'] = 'Bearer $token';
     request.fields.addAll(fields);

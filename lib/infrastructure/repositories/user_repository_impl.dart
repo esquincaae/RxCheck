@@ -23,7 +23,9 @@ class UserRepositoryImpl implements UserRepository {
     if (curp == null || token.isEmpty) return null;
     final resp = await _ds.getUser(token, curp);
     if (resp.statusCode == 200) {
-      final d = jsonDecode(resp.body)['data'];
+      final decoded = jsonDecode(resp.body);
+      // si tu API no anida bajo "data", toma el objeto completo:
+      final d = decoded['data'] ?? decoded;
       return User(
         curp: d['curp'] ?? '',
         nombre: d['nombre'] ?? '',
@@ -39,26 +41,51 @@ class UserRepositoryImpl implements UserRepository {
     return null;
   }
 
-  @override
-  Future<bool> updateImage(File imageFile) async {
-    final curp = _curp();
-    final token = await _token();
-    if (curp == null || token.isEmpty) return false;
-    final resp = await _ds.updateImage(token, curp, imageFile);
-    if (resp.statusCode == 200) return true;
-    return false;
-  }
+    @override
+    Future<bool> updateProfile({
+      required String email,
+      required String phone,
+      required String address,
+    }) async {
+      final curp  = _curp();
+      final token = await _token();
+      if (curp == null || token.isEmpty) return false;
+
+      // Obtén el usuario actual para reutilizar todos sus campos
+      final existing = await getUserData();
+      if (existing == null) return false;
+
+      final resp = await _ds.updateProfile(token, curp, {
+        'curp'            : existing.curp,
+        'nombre'          : existing.nombre,
+        'apellidoPaterno' : existing.apellidoPaterno,
+        'apellidoMaterno' : existing.apellidoMaterno,
+        'email'           : email,
+        'telefono'        : phone,
+        'domicilio'       : address,
+      });
+
+      final ok = resp.statusCode == 200 || resp.statusCode == 201;
+      if (!ok) {
+        final body = await resp.stream.bytesToString();
+        print('updateProfile error: ${resp.statusCode} -> $body');
+      }
+      return ok;
+    }
 
   @override
-  Future<bool> updateProfile({required String email, required String phone, required String address}) async {
-    final curp = _curp();
+  Future<bool> updateImage(File imageFile) async {
+    final curp  = _curp();
     final token = await _token();
     if (curp == null || token.isEmpty) return false;
-    final resp = await _ds.updateProfile(token, curp, {
-      'email': email,
-      'telefono': phone,
-      'domicilio': address,
-    });
-    return resp.statusCode == 200;
+
+    final resp  = await _ds.updateImage(token, curp, imageFile);
+    final ok    = resp.statusCode == 200 || resp.statusCode == 201;
+
+    if (!ok) {
+      final body = await resp.stream.bytesToString();
+      print('updateImage error: ${resp.statusCode} -> $body');
+    }
+    return ok;
   }
 }
