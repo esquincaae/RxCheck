@@ -13,18 +13,28 @@ class HttpUserDataSource {
     );
   }
 
-  Future<http.StreamedResponse> updateImage(String token, String curp, File imageFile) {
-    var req = http.MultipartRequest('PUT', Uri.parse('$baseUrl/user/users/$curp'));
-    req.headers['Authorization'] = 'Bearer $token';
-    req.files.add(http.MultipartFile.fromPath('imagen', imageFile.path));
-    return req.send();
+  Future<http.StreamedResponse> updateImage(String token, String curp, File imageFile) async {
+    var uri = Uri.parse('$baseUrl/user/users/$curp');
+    var request = http.MultipartRequest('PUT', uri);
+    request.headers['Authorization'] = 'Bearer $token';
+
+    // Creamos primero el MultipartFile
+    final multipartFile = await http.MultipartFile.fromPath(
+      'imagen',
+      imageFile.path,
+    );
+    request.files.add(multipartFile);
+
+    return request.send();
   }
 
   Future<http.StreamedResponse> updateProfile(
-      String token, String curp, Map<String, String> fields) {
-    var req = http.MultipartRequest('PUT', Uri.parse('$baseUrl/user/users/$curp'));
-    req.headers['Authorization'] = 'Bearer $token';
-    req.fields.addAll(fields);
-    return req.send();
+      String token, String curp, Map<String, String> fields) async {
+    var uri = Uri.parse('$baseUrl/user/users/$curp');
+    var request = http.MultipartRequest('PUT', uri);
+    request.headers['Authorization'] = 'Bearer $token';
+    request.fields.addAll(fields);
+
+    return request.send();
   }
 }

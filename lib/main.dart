@@ -1,40 +1,70 @@
+// lib/main.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-// Domain / Application / Infrastructure / Presentation imports omitidos por brevedad
-// Importa aquí todos tus datasources, repositorios, usecases y viewmodels
+// ─── DATASOURCES ──────────────────────────────────────────────────────────────
+import 'infrastructure/datasource/http_auth_datasource.dart';
+import 'infrastructure/datasource/http_recipe_datasource.dart';
+import 'infrastructure/datasource/http_user_datasource.dart';
+
+// ─── REPOSITORIES ────────────────────────────────────────────────────────────
+import 'infrastructure/repositories/auth_repository_impl.dart';
+import 'infrastructure/repositories/recipe_repository_impl.dart';
+import 'infrastructure/repositories/user_repository_impl.dart';
+
+// ─── USE CASES ────────────────────────────────────────────────────────────────
+import 'application/usecases/login_usecase.dart';
+import 'application/usecases/signup_usecase.dart';
+import 'application/usecases/fetch_recipes_usecase.dart';
+import 'application/usecases/fetch_medications_usecase.dart';
+import 'application/usecases/fetch_qr_usecase.dart';
+import 'application/usecases/supply_medications_usecase.dart';
+import 'application/usecases/get_user_usecase.dart';
+import 'application/usecases/update_profile_usecase.dart';
+import 'application/usecases/update_image_usecase.dart';
+
+// ─── VIEWMODELS ───────────────────────────────────────────────────────────────
+import 'presentation/viewmodels/login_viewmodel.dart';
+import 'presentation/viewmodels/signup_viewmodel.dart';
+import 'presentation/viewmodels/recipe_list_viewmodel.dart';
+import 'presentation/viewmodels/recipe_detail_viewmodel.dart';
+import 'presentation/viewmodels/edit_profile_viewmodel.dart';
+
+// ─── SCREENS ─────────────────────────────────────────────────────────────────
+import 'presentation/screens/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: '.env');
 
-  final prefs = await SharedPreferences.getInstance();
+  final prefs   = await SharedPreferences.getInstance();
   final storage = FlutterSecureStorage();
   final baseUrl = dotenv.env['API_URL']!;
 
-  // Datasources
-  final authDs = HttpAuthDataSource('$baseUrl/user');
+  // Instanciamos datasources
+  final authDs   = HttpAuthDataSource('$baseUrl/user');
   final recipeDs = HttpRecipeDataSource(baseUrl);
-  final userDs = HttpUserDataSource('$baseUrl/user');
+  final userDs   = HttpUserDataSource('$baseUrl/user');
 
-  // Repositories
-  final authRepo = AuthRepositoryImpl(authDs, storage, prefs);
+  // Instanciamos repositorios
+  final authRepo   = AuthRepositoryImpl(authDs, storage, prefs);
   final recipeRepo = RecipeRepositoryImpl(recipeDs, storage);
-  final userRepo = UserRepositoryImpl(userDs, storage, prefs);
+  final userRepo   = UserRepositoryImpl(userDs, storage, prefs);
 
-  // Use cases
-  final loginUc = LoginUseCase(authRepo);
-  final signupUc = SignupUseCase(authRepo);
-  final fetchRecipesUc = FetchRecipesUseCase(recipeRepo);
-  final fetchMedsUc = FetchMedicationsUseCase(recipeRepo);
-  final fetchQrUc = FetchQrUseCase(recipeRepo);
-  final supplyMedsUc = SupplyMedicationsUseCase(recipeRepo);
-  final getUserUc = GetUserUseCase(userRepo);
+  // Instanciamos use cases
+  final loginUc         = LoginUseCase(authRepo);
+  final signupUc        = SignupUseCase(authRepo);
+  final fetchRecipesUc  = FetchRecipesUseCase(recipeRepo);
+  final fetchMedsUc     = FetchMedicationsUseCase(recipeRepo);
+  final fetchQrUc       = FetchQrUseCase(recipeRepo);
+  final supplyMedsUc    = SupplyMedicationsUseCase(recipeRepo);
+  final getUserUc       = GetUserUseCase(userRepo);
   final updateProfileUc = UpdateProfileUseCase(userRepo);
-  final updateImageUc = UpdateImageUseCase(userRepo);
+  final updateImageUc   = UpdateImageUseCase(userRepo);
 
   runApp(
     MultiProvider(
@@ -43,9 +73,9 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => SignupViewModel(signupUc)),
         ChangeNotifierProvider(create: (_) => RecipeListViewModel(fetchRecipesUc)),
         ChangeNotifierProvider(
-            create: (_) => RecipeDetailViewModel(fetchMedsUc, fetchQrUc, supplyMedsUc)),
+          create: (_) => RecipeDetailViewModel(fetchMedsUc, fetchQrUc, supplyMedsUc),
+        ),
         ChangeNotifierProvider(create: (_) => EditProfileViewModel(getUserUc, updateProfileUc, updateImageUc)),
-        // Añade más ViewModels si los creaste
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
