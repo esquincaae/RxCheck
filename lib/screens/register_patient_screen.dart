@@ -13,7 +13,7 @@
   }
 
   class _RegistroPacientePageState extends State<RegisterPatientScreenPage> {
-    RegExp regCurp = RegExp(r'^[a-zA-Z0-9]{18}$');
+    RegExp regCurp = RegExp(r'^[A-Z0-9]{18}$');
     RegExp regMail = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     RegExp regName = RegExp(r'^[a-zA-Z]+$');
     RegExp regNum = RegExp(r'^[0-9]{10}$');

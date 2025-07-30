@@ -10,6 +10,9 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+  RegExp regMail = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+  RegExp regPass = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$');
+  RegExp regCode = RegExp(r'^[A-Z0-9]{6}$');
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final codeController = TextEditingController();
@@ -102,7 +105,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               if (value == null || value.isEmpty) {
                                 return 'Por favor ingresa tu correo';
                               }
-                              if (!value.contains('@') && !value.contains('.')) {
+                              if (!regMail.hasMatch(value)) {
                                 return 'Ingresa un correo válido';
                               }
                               return null;
@@ -117,10 +120,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             keyboardType: TextInputType.text,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Por favor ingrese el codigo que se envio a su correo ingresado en la vista anterior';
+                                return 'Por favor ingrese el codigo que se envio a su correo';
                               }
-                              if (value.length < 6 || value.length > 6) {
-                                return 'Ingresa un codigo valido';
+                              if (!regCode.hasMatch(value)) {
+                                return 'El codigo debe constar de 6 caracteres, mayusculas y numeros';
                               }
                               return null;
                             },
@@ -138,6 +141,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               }
                               if (value.length < 8) {
                                 return 'Debe tener al menos 8 caracteres';
+                              }
+                              if (!regPass.hasMatch(value)) {
+                                return 'Debe contener al menos una letra mayúscula, '
+                                    'una letra minúscula, un número y un carácter especial';
                               }
                               return null;
                             },

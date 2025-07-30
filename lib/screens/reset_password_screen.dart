@@ -10,6 +10,8 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  RegExp regMail = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+  RegExp regCode = RegExp(r'^[A-Z0-9]{6}$');
   final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final curpController = TextEditingController();
@@ -31,7 +33,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       );
 
       setState(() {
-        message = 'si el correo existe en nuestro sistema, recibirás un código de recuperación';
+        message = 'si el correo existe en el sistema, recibirás un código de recuperación';
         Navigator.push(context, MaterialPageRoute(
             builder: (_) => _changePasswordScreen),
         );
@@ -103,7 +105,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               if (value == null || value.isEmpty) {
                                 return 'Por favor ingresa tu correo';
                               }
-                              if (!value.contains('@') && !value.contains('.')) {
+                              if(!regMail.hasMatch(value)){
                                 return 'Ingresa un correo válido';
                               }
                               return null;

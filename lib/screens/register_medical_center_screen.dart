@@ -12,7 +12,7 @@ class RegisterMedicalCenterScreen extends StatefulWidget {
 }
 
 class _RegisterMedicalCenterScreenState extends State<RegisterMedicalCenterScreen> {
-  RegExp regRFC = RegExp(r'^[a-zA-Z0-9]{12,13}$');
+  RegExp regRFC = RegExp(r'^[A-Z0-9]{12,13}$');
   RegExp regCurp = RegExp(r'^[a-zA-Z0-9]{18}$');
   RegExp regMail = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
   RegExp regName = RegExp(r'^[a-zA-Z]+$');
